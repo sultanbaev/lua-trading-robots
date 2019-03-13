@@ -24,10 +24,10 @@ ACCOUNT           = 'SPBFUTJR9PN';        -- Идентификатор счета
 CLASS_CODE        = 'SPBFUT';             -- Код класса
 SEC_CODE          = 'RIH9';               -- Код бумаги
 INTERVAL          = INTERVAL_M1;          -- Таймфрейм графика (для построения скользящих)
-SLOW_MA_PERIOD    = 12;                   -- ПЕРИОД МЕДЛЕННОЙ скользящей
-SLOW_MA_SOURCE    = 'O';                  -- ИСТОЧНИК МЕДЛЕННОЙ скользящей [O - open, C - close, H - hi, L - low]
-FAST_MA_PERIOD    = 4;                    -- ПЕРИОД БЫСТРОЙ скользящей
-FAST_MA_SOURCE    = 'O';                  -- ИСТОЧНИК БЫСТРОЙ скользящей [O - open, C - close, H - hi, L - low]
+SLOW_MA_PERIOD    = 20;                   -- ПЕРИОД МЕДЛЕННОЙ скользящей
+SLOW_MA_SOURCE    = 'C';                  -- ИСТОЧНИК МЕДЛЕННОЙ скользящей [O - open, C - close, H - hi, L - low]
+FAST_MA_PERIOD    = 15;                    -- ПЕРИОД БЫСТРОЙ скользящей
+FAST_MA_SOURCE    = 'C';                  -- ИСТОЧНИК БЫСТРОЙ скользящей [O - open, C - close, H - hi, L - low]
 STOP_LOSS         = 40;                   -- Размер СТОП-ЛОССА (в шагах цены)
 TAKE_PROFIT       = 10;                   -- Размер ТЕЙК-ПРОФИТА (в шагах цены)
 
