@@ -1,0 +1,469 @@
+'Функция перевода даты в текстовый формат
+'Параметры функции:
+'Year - год, Month - месяц, Day - день
+FUNC dateToString(Year, Month, Day)
+	IF (LEN(Month) < 2)
+		Month = "0" & Month
+	END IF
+	IF (LEN(Day) < 2)
+		Day = "0" & Day
+	END IF
+
+	result = Year & Month & Day
+END FUNC
+
+
+
+
+'Функция перевода времени в текстовый формат
+'Параметры функции:
+'Hour - часы, Min - минуты, Sec - секунды
+FUNC timeToString(Hour, Min, Sec)
+	IF (LEN(Hour) < 2)
+		Hour = "0" & Hour
+	END IF
+	IF (LEN(Min) < 2)
+		Min = "0" & Min
+	END IF
+
+	result = Hour & Min & "00"
+END FUNC
+
+
+
+'Получаем время сервера
+FUNC getServerTime()
+	'-- Время сервера --
+	SERVERDATE = GET_INFO_PARAM("TRADEDATE")
+	SERVERTIME = GET_INFO_PARAM("SERVERTIME")
+	date = SUBSTR(SERVERDATE,6,4) & SUBSTR(SERVERDATE,3,2) & SUBSTR(SERVERDATE,0,2)
+	time = SUBSTR(SERVERTIME,0,2) & SUBSTR(SERVERTIME,3,2) & SUBSTR(SERVERTIME,6,7)
+
+	yearPart = 0 + SUBSTR(date,0,4) 
+	monthPart = 0 + SUBSTR(date,4,2) 
+	dayPart = 0 + SUBSTR(date,6,2) 
+	hourPart = 0 + SUBSTR(time,0,2) 
+	minutePart = 0 + SUBSTR(time,2,2) 
+	minutePart = timeFrame * FLOOR(minutePart/timeFrame)			 'округление минут до выбранного интервала
+	secondPart = 0 + SUBSTR(time,4,2) 
+END FUNC
+
+
+
+
+'Фкункция Получения целой части от деления числа а на число b
+FUNC DIV(a,b)
+	RESULT = FLOOR(a / b)
+END FUNC
+
+
+
+'Фкункция Получения остатка от деления числа а на число b
+FUNC MOD(a, b)
+	IF (0 + b = 0)
+		result = 0
+	ELSE
+		cel = floor((a/b))
+		result = a - (b * cel)
+	END IF
+END FUNC
+
+
+
+FUNC MIN(a, b)
+	IF (a < b)
+		RESULT = a
+	ELSE
+		RESULT = b
+	END IF
+END FUNC
+
+
+
+
+FUNC MAX(a, b)
+	IF (a > b)
+		RESULT = a
+	ELSE
+		RESULT = b
+	END IF
+END FUNC
+
+
+
+'Функция отправки заявки на покупку/продажу
+'Параметры функции:
+'operation - "B" или "S" - Покупка или Продажа.
+'-----
+FUNC createOrderByMarket(operation, shareCount)
+	TransID = getUniqueTransID()
+	trans_params = ""
+	trans_params = set_value (trans_params, "TRANS_ID",	TransID)
+	trans_params = set_value (trans_params, "ACTION",	"NEW_ORDER")
+	trans_params = set_value (trans_params, "CLASSCODE", secClass)
+	trans_params = set_value (trans_params, "SECCODE",	 secCode)
+	trans_params = set_value (trans_params, "OPERATION", operation)
+	trans_params = set_value (trans_params, "QUANTITY",	shareCount)
+	trans_params = set_value (trans_params, "TYPE",		"L")		'Для фьючерсов только лимитные заявки
+	trans_params = set_value (trans_params, "CLIENT_CODE", clientCode & "//Oper:" & operation)
+	trans_params = set_value (trans_params, "ACCOUNT",	 clientAccount)
+
+	orderPrice = 0
+
+	IF (operation = "B")
+		offerPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "OFFER"), "PARAM_VALUE")	'Лучшая цена предложения
+		IF (offerPrice == 0)
+			MESSAGE("Не могу определить цену", 1)
+			RESULT = 0
+			RETURN
+		END IF
+		orderPrice = offerPrice + slippage
+		orderPrice = floorRTSPrice(orderPrice)
+	END IF
+	IF (operation = "S")
+		bidPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "BID"), "PARAM_VALUE")		'Лучшая цена спроса
+		IF (bidPrice == 0)
+			MESSAGE("Не могу определить цену", 1)
+			RESULT = 0
+			RETURN
+		END IF
+		orderPrice = bidPrice - slippage
+		orderPrice = floorRTSPrice(orderPrice)
+	END IF
+
+	trans_params = set_value (trans_params, "PRICE", orderPrice)
+	
+	trans_result = SEND_TRANSACTION(300, trans_params)
+
+	FOR while FROM 0 TO 1000	'Цикл проверки заявки
+		'while = 0				'Обнуление счётчика для бесконечности цикла. Включается при необходимости
+		IF GET_VALUE(trans_result, "RESULT_EX") == "3"			'Если транзакция выполнена, то запоминаем номер ордера и выходим из функции
+			description = GET_VALUE(trans_result, "DESCRIPTION")
+			orderNumber = GET_VALUE(trans_result, "ORDER_NUMBER")	'В случае удачи получим номер ордера
+			
+			writelog("Номер заявки: " & orderNumber & "; Описание: " & description)
+			
+			RESULT = 1
+			RETURN	'Выход из функции отправки заявки
+		END IF
+	END FOR
+
+	descriptionError = GET_VALUE(trans_result, "DESCRIPTION")
+
+	writelog("ОШИБКА ВЫСТАВЛЕНИЯ ЗАЯВКИ: " & descriptionError & "; Операция: " & operation & "; Цена: " & orderPrice)
+
+	Message("ОШИБКА ВЫСТАВЛЕНИЯ ЗАЯВКИ: " & descriptionError & "; Операция: " & operation & "; Цена: " & orderPrice, 1)
+
+	RESULT = 0
+END FUNC
+
+
+
+
+'Функция отправки стоп-заявки
+'Параметры функции:
+'operation - "B" или "S" - Покупка или Продажа.
+'price - цена
+'-----
+FUNC createStopOrder(operation, stopPrice)
+	TransID = getUniqueTransID()
+	trans_params = ""
+	trans_params = set_value (trans_params, "TRANS_ID",	TransID)
+	trans_params = set_value (trans_params, "ACTION",	"NEW_STOP_ORDER")
+	trans_params = set_value (trans_params, "CLASSCODE", secClass)
+	trans_params = set_value (trans_params, "SECCODE",	 secCode)
+	trans_params = set_value (trans_params, "OPERATION", operation)
+	trans_params = set_value (trans_params, "QUANTITY",	shareCount)
+	trans_params = set_value (trans_params, "TYPE",		"L")		'Для фьючерсов только лимитные заявки
+	trans_params = set_value (trans_params, "CLIENT_CODE", clientCode)
+	trans_params = set_value (trans_params, "ACCOUNT",	 clientAccount)
+	trans_params = set_value (trans_params, "STOPPRICE",	floorRTSPrice(stopPrice))
+
+
+	orderPrice = 0
+	IF operation == "B"
+		orderPrice = stopPrice + slippage
+		orderPrice = floorRTSPrice(orderPrice)
+	END IF
+	IF operation == "S"
+		orderPrice = stopPrice - slippage
+		orderPrice = floorRTSPrice(orderPrice)
+	END IF
+
+	trans_params = set_value (trans_params, "PRICE",	 orderPrice)
+
+
+	trans_result = SEND_TRANSACTION(300, trans_params)
+	res = 0
+	FOR while FROM 0 TO 1000	'Цикл проверки заявки
+		'while = 0				'Обнуление счётчика для бесконечности цикла. Включается при необходимости
+		res = GET_VALUE(trans_result, "RESULT_EX")
+		IF ( res == "3" )			'Если транзакция выполнена, то запоминаем номер ордера и выходим из функции
+			writelog("Стоп-заявка " & operation & " успешно отправлена для стоп-цены " & stopPrice & " по цене " & orderPrice)
+
+			'orderNumber = GET_VALUE(trans_result, "ORDER_NUMBER")	'В случае удачи получим номер ордера
+			RESULT = 1
+			RETURN	'Выход из функции отправки заявки
+		END IF
+	END FOR
+
+	IF ( res <> "3" )
+		err = GET_VALUE(trans_result, "DESCRIPTION")
+		writelog("Ошибка выставления стоп-заявки: " & err)
+		MESSAGE(err, 1)
+	END IF
+
+
+	RESULT = 0
+END FUNC
+
+
+
+
+
+'Снять все стоп-заявки
+FUNC killAllStopOrders(secCode)
+	N = 0 + GET_NUMBER_OF("STOP_ORDERS")
+
+	IF N > 0
+		FOR I FROM 0 TO N
+			IF ( (GET_VALUE(GET_ITEM("STOP_ORDERS",I), "SECCODE") == secCode) AND (GET_VALUE(GET_ITEM("STOP_ORDERS",I), "STATUS") == "ACTIVE") )
+				number = GET_VALUE(GET_ITEM("STOP_ORDERS",I), "NUMBER")
+				R = killStopOrderByNumber(number)
+			END IF
+		END FOR
+	END IF
+END FUNC
+
+
+
+
+'Снятие заявки по её number
+'number - номер заявки
+FUNC killStopOrderByNumber(number)
+	TransID = getUniqueTransID()
+	TRANS_RESULT = ""
+	TRANS_PARAMS = ""
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "ACTION", "KILL_STOP_ORDER")
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "CLASSCODE", secClass)
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "CLIENT_CODE", clientCode)
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "SECCODE", secCode)
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "ACCOUNT", clientAccount) 
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "STOP_ORDER_KEY", number & "")
+	TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "TRANS_ID", TransID)
+	TRANS_RESULT = SEND_TRANSACTION (300, TRANS_PARAMS)
+
+	res = GET_VALUE(TRANS_RESULT, "RESULT_EX")
+
+	IF (res <> "3")
+		err = GET_VALUE(TRANS_RESULT, "DESCRIPTION")
+		MESSAGE(err, 1)
+	END IF
+END FUNC
+
+
+
+
+'Определение текущего количества открытых позиций по фьючерсам
+FUNC getFuturesPosition(securityCode)
+	POZ = 0
+	N = 0 + GET_NUMBER_OF("FUTURES_CLIENT_HOLDINGS")
+	IF N > 0
+		FOR I FROM 0 TO N
+			IF GET_VALUE(GET_ITEM("FUTURES_CLIENT_HOLDINGS",I),"SECCODE") = securityCode
+				POZ = 0 + GET_VALUE(GET_ITEM("FUTURES_CLIENT_HOLDINGS",I), "TOTAL_NET")
+			END IF
+		END FOR
+	END IF
+	RESULT = POZ
+END FUNC
+
+
+
+
+
+'Функция возвращает уникальный номер транзакции
+FUNC getUniqueTransID()
+	SERVERTIME = GET_INFO_PARAM("SERVERTIME")
+	TIME = SUBSTR(SERVERTIME,0,2) & SUBSTR(SERVERTIME,3,2) & SUBSTR(SERVERTIME,6,7)
+	
+	RESULT = TIME
+END FUNC
+
+
+
+
+'Функция возвращает Цену с учетом минимального шага цена для ФОРТС
+FUNC floorRTSPrice(price)
+	price = DIV(price + 0, minStepPrice)
+	price = price * minStepPrice
+
+	RESULT = price
+END FUNC
+
+
+
+
+'Поиск значений текущей свечи
+FUNC getCurCandle()
+	year = yearPart
+	month = monthPart
+	day = dayPart
+	hour = hourPart
+	minute = minutePart
+	second = secondPart
+
+	dateString = dateToString(year, month, day)
+	timeString = timeToString(hour, minute, second)
+
+	candle = GET_CANDLE(secClass, secCode, "", timeFrame, "PRICE", dateString, timeString)		'Получаем свечу
+	candleOpen = GET_VALUE(candle, "OPEN") + 0		'Цена открытия свечи
+	candleHigh = GET_VALUE(candle, "HIGH") + 0
+	candleLow = GET_VALUE(candle, "LOW") + 0
+	candleClose = GET_VALUE(candle, "CLOSE") + 0
+
+	IF (candleOpen > 0)
+		RESULT = 1
+		RETURN
+	END IF
+
+
+	IF (candleOpen == 0)
+		'MESSAGE("Не могу определить данные предыдущей свечи", 1)
+		RESULT = 0
+	END IF
+END FUNC
+
+
+
+
+'Вычисляем значения предыдущей свечи
+FUNC getPrevCandle()
+
+	year = yearPart
+	month = monthPart
+	day = dayPart
+	hour = hourPart
+	minute = minutePart
+	second = secondPart
+
+	candlePrevOpen = 0
+
+	'условно бесконечный цикл
+	FOR i from 1 to 10000
+	  
+		'Вычисляем время предыдущей свечи
+		minute = minute - timeFrame
+		  
+		IF minute < 0
+			minute = 60 - timeFrame
+			hour = hour - 1
+
+			IF hour < 0
+				hour = 23
+				day = day - 1
+			
+				IF day < 1
+					day = 31
+					month = month - 1
+		  
+					IF month < 1
+						month = 12
+						year = year - 1
+					END IF
+				END IF
+			END IF
+		END IF
+
+
+		dateString = dateToString(year, month, day)
+		timeString = timeToString(hour, minute, second)
+
+
+		candle = GET_CANDLE(secClass, secCode, "", timeFrame, "PRICE", dateString, timeString)		'Получаем свечу
+		candlePrevOpen = GET_VALUE(candle, "OPEN") + 0		'Цена открытия свечи
+		candlePrevHigh = GET_VALUE(candle, "HIGH") + 0
+		candlePrevLow = GET_VALUE(candle, "LOW") + 0
+		candlePrevClose = GET_VALUE(candle, "CLOSE") + 0
+		volume = GET_VALUE(candle, "VOLUME") + 0
+
+		IF (candlePrevOpen > 0)
+			RESULT = 1
+			RETURN
+		END IF
+
+	END FOR
+
+
+
+	IF (candlePrevOpen == 0)
+		'MESSAGE("Не могу определить данные предыдущей свечи", 1)
+		RESULT = 0
+	END IF
+
+END FUNC
+
+
+
+
+
+'Записываем лог
+FUNC writeLog(logSt)
+	IF (canWriteLog == 1)
+		'-- Время сервера --
+		SERVERDATE = GET_INFO_PARAM("TRADEDATE")
+		SERVERTIME = GET_INFO_PARAM("SERVERTIME")
+		date = SUBSTR(SERVERDATE,6,4) & SUBSTR(SERVERDATE,3,2) & SUBSTR(SERVERDATE,0,2)
+		time = SUBSTR(SERVERTIME,0,2) & SUBSTR(SERVERTIME,3,2) & SUBSTR(SERVERTIME,6,7)
+
+		yearPart = 0 + SUBSTR(date,0,4) 
+		monthPart = 0 + SUBSTR(date,4,2) 
+		dayPart = 0 + SUBSTR(date,6,2) 
+		hourPart = 0 + SUBSTR(time,0,2) 
+		minutePart = 0 + SUBSTR(time,2,2) 
+		secondPart = 0 + SUBSTR(time,4,2) 
+		date = dayPart & "." & monthPart & "." & yearPart
+		time = hourPart & ":" & minutePart & ":" & secondPart
+
+
+		logSt = "[" & date & " " & time & "]  " & logSt
+
+
+		WRITELN(fileLog, logSt)
+	END IF
+END FUNC
+
+
+
+
+
+'Функция - пауза
+'Pause_Time - время в миллисекундах
+FUNC PAUSE(Pause_Time)
+	pst = GET_DATETIME() 'Фиксируется системное время в переменной pst первый раз
+	'Приводим системное время к числу и фиксируем в переменной first_sys_time
+	first_sys_time = 0+GET_VALUE(pst, "HOUR")*3600000 + GET_VALUE(pst, "MIN")*60000 + GET_VALUE(pst, "SEC")*1000 + GET_VALUE(pst, "MILLISEC")
+	FOR pst_flag FROM 0 TO 1
+		pst = GET_DATETIME() 'Фиксируется системное время в переменной pst второй раз
+		second_sys_time = 0+GET_VALUE(pst, "HOUR")*3600000 + GET_VALUE(pst, "MIN")*60000 + GET_VALUE(pst, "SEC")*1000 + GET_VALUE(pst, "MILLISEC")
+		IF (second_sys_time - first_sys_time) <= pause_time 'Если разница меньше заданной во входном параметре, то возврат к началу цикла
+			pst_flag = -1
+		END IF
+	END FOR
+END FUNC
+
+
+
+
+
+
+'Функция проверки времени в которое можно торговать
+FUNC checkTime(hour, minute)
+	'Определяем интервал в котором можем совершать сделки и урравлять позицией
+	IF ( ( hourPart >= 10 ) AND ( hourPart < 18 ) ) OR ( ( hourPart == 18 ) AND ( minutePart < 45 ) ) OR ( ( hourPart >= 19 ) AND ( hourPart < 23 ) ) OR ( ( hourPart == 23 ) AND ( minutePart < 45 ) )	'trading time
+		RESULT = 1	'Разрешено торговать
+	ELSE
+		RESULT = 0	'Запрещено торговать
+	END IF
+
+END FUNC

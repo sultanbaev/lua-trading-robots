@@ -1,0 +1,314 @@
+'Функция записи в файл информации о сделке
+'Параметры функции:
+'..........
+FUNC saveData(fileData, day, dealsCount, resistLevel, supportLevel, orderNum)
+	CLEAR_FILE (fileData)
+	'breakpoint()
+	writelog("Сохраняю данные в файл. day=" & day & "; dealsCount=" & dealsCount & "; resistLevel=" & resistLevel & "; supportLevel=" & supportLevel & "; orderNum=" & orderNum)
+
+	writeln (fileData, day)
+	writeln (fileData, dealsCount)
+	writeln (fileData, resistLevel)
+	writeln (fileData, supportLevel)
+	writeln (fileData, orderNum)
+END FUNC
+
+
+
+
+
+'Функция вычисляет уровни Вуди
+FUNC calcLevels(candlesWatchCount)
+
+	year = yearPart
+	month = monthPart
+	day = dayPart
+	hour = hourPart
+	minute = minutePart
+	second = secondPart
+
+	prevDay = day		'день у которого просматриваем свечи
+	foundPrevDay = 0	'Найден ли предыдущий день (1 == найден, 0 == не найден)
+
+
+	prevDayHigh = 0
+	prevDayLow = 0
+	prevDayClose = 0
+
+	'время high/low свечи
+	highTime = ""
+	lowTime = ""
+	closeTime = ""
+
+
+	'Просматриваем предыдущие свечи для поиска High, Low, Close цен
+	FOR i from 1 to candlesWatchCount
+		'Если вышли за пределы предыдущего дня
+		IF ( (foundPrevDay == 1) AND (day <> prevDay) )
+			BREAK
+		END IF
+
+		dateString = dateToString(year, month, day)
+		timeString = timeToString(hour, minute, second)
+	  
+		candle = GET_CANDLE(secClass, secCode, "", timeFrame, "PRICE", dateString, timeString)		'Получаем свечу
+		open = GET_VALUE(candle, "OPEN") + 0		'Цена открытия свечи
+		high = GET_VALUE(candle, "HIGH") + 0
+		low = GET_VALUE(candle, "LOW") + 0
+		close = GET_VALUE(candle, "CLOSE") + 0
+		volume = GET_VALUE(candle, "VOLUME") + 0
+
+
+		IF ( (foundPrevDay == 0) AND (open > 0) AND (day <> dayPart) )		'Если найден день другой
+			prevDay = day
+			foundPrevDay = 1	'нашли предыдущий день
+
+			prevDayHigh = high
+			prevDayLow = low
+			prevDayClose = close
+
+			closeTime = dateString & " " & timeString
+		END IF
+
+
+		IF ( (foundPrevDay == 1) AND (day == prevDay) AND (open > 0) )		'Если найден предыдущий день
+			'Вычисляем High, Low предыдущего дня
+			IF ( high > prevDayHigh )
+				prevDayHigh = high
+				highTime = dateString & " " & timeString
+			END IF
+			IF ( low < prevDayLow )
+				prevDayLow = low
+				lowTime = dateString & " " & timeString
+			END IF
+		ELSE
+			i = i - 1	'т.к. свечу не определили, то уменьшаем итератор
+		END IF
+
+
+
+		'Вычисляем время предыдущей свечи
+		minute = minute - timeFrame
+		  
+		IF minute < 0
+			minute = 60 - timeFrame
+			hour = hour - 1
+
+			IF hour < 0
+				hour = 23
+				day = day - 1
+			
+				IF day < 1
+					day = 31
+					month = month - 1
+		  
+					IF month < 1
+						month = 12
+						year = year - 1
+					END IF
+				END IF
+			END IF
+		END IF
+
+	END FOR
+
+	'MESSAGE(prevDayHigh & " " & prevDayLow, 1)
+
+	'Рассчитываем уровни Вуди-Милованова
+	delta = (prevDayHigh - prevDayLow) / 2
+	resistLevel = prevDayClose + delta
+	supportLevel = prevDayClose - delta
+
+
+	writelog("Данные для вычисления уровней: prevDayHigh=" &  prevDayHigh & "[" & highTime & "]; prevDayLow=" & prevDayLow & "[" & lowTime & "] ; prevDayClose=" & prevDayClose & "[" & closeTime & "]")
+	writelog("Уровни вычислены. resistLevel=" & resistLevel & "; supportLevel=" & supportLevel)
+
+
+	saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, orderNumber)
+
+END FUNC
+
+
+
+
+
+
+
+'Функция выставления стоп-ордера
+FUNC managePosition(openPos)
+
+	'Закрываем позицию в конце дня
+	'breakpoint()
+	IF (openPos <> 0) AND (hourPart == 23) AND (minutePart >= 30)
+		IF (openPos > 0)
+			writelog("Время больше 23:30, пытаюсь закрыть позицию ЛОНГ. Открытых позиций=" & openPos)
+			transactionResult = createOrderByMarket("S", openPos)	  'Закрываем лонг
+
+			'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+			IF (transactionResult == 1)
+				saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, 0)	'Сохраняем данные в файл
+				killAllStopOrders()
+				openPos = 0
+			END IF
+		ELSE	'openPos < 0
+			writelog("Время больше 23:30, пытаюсь закрыть позицию ШОРТ. Открытых позиций=" & openPos)
+			transactionResult = createOrderByMarket("B", -openPos)	  'Закрываем лонг
+
+			'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+			IF (transactionResult == 1)
+				writelog("Заявка на закрытие позиций отправлена успешно")
+				saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, 0)	'Сохраняем данные в файл
+				killAllStopOrders()
+				openPos = 0
+			END IF
+		END IF
+	END IF
+	
+
+
+	'Выставляем стоп если нужно
+	IF (openPos <> 0)
+
+		'Проверяем orderNumber, если он равен 0, то что-то случилось (перезагрузка робота), поэтому берем orderNumber из файла
+		IF ( (orderNumber+0) == 0 )
+			orderNumber = READ_LINE(fileData, 5, error) + 0
+		END IF
+
+
+		balance = GET_VALUE(GET_ITEM("ORDERS", orderNumber), "BALANCE") + 0	'определяем полностью ли исполнилась заявка
+
+
+		'Если заявка исполнилась полноcтью
+		IF (balance == 0)
+
+			isSetStop = 0	   'Выставлен ли стоп-лосс, 0 = false, 1 = true
+
+			'Проверяем если стоп-лосс по этому инструменту еще не выставлен, то выставляем
+			n = get_number_of("STOP_ORDERS")
+			IF ( n > 0 )
+				FOR i FROM 0 TO n
+					IF (GET_VALUE(GET_ITEM("STOP_ORDERS", i),"SECCODE") = secCode) AND (GET_VALUE(GET_ITEM("STOP_ORDERS", i), "STATUS") = "ACTIVE")
+						isSetStop = 1
+					END IF
+				END FOR
+			END IF
+
+
+			'Если стоп-лосс не выставлен
+			IF (isSetStop == 0)
+				writelog("Стоп-заявок нет, пытаюсь выставить стоп-лосс")
+
+				'Определяем по какой цене исполнилась заявка
+				avgEnterPrice = getAvgPrice(orderNumber)
+
+
+				'Если цена не определена, находим текущую цену
+				IF ( avgEnterPrice <= 0 )
+					askPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "OFFER"), "PARAM_VALUE")	'Лучшая цена продажи
+					bidPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "BID"), "PARAM_VALUE")		'Лучшая цена покупки
+
+					IF (openPos > 0)
+						avgEnterPrice = askPrice
+					ELSE
+						avgEnterPrice = bidPrice
+					END IF
+
+					writeLog("Ошибка: Не могу определить цену для стопа-лоса и выставить стоп-лосс для сделки номер: [" & orderNumber & "] В качестве цены для определения стоп-заявки использую лучшую цену продажи/покупки = " & avgEnterPrice)
+				END IF
+
+
+
+				IF ( avgEnterPrice > 0 )	'Если цена исполненной заявки определена то выставляем стоп-лосc
+
+					'Если позиция открыта в лонг
+					IF (openPos > 0)
+						stop1 = 25 * (resistLevel - supportLevel) / 100		'стоп-лосс - четверть от движения
+						stop2 = avgEnterPrice / 100 * 2.5			'Риск на сделку
+						stopLoss = MIN(stop1, stop2)
+
+						stopLossLevel = avgEnterPrice - stopLoss
+
+						IF (resistLevel > 0)
+							stopLoss = MIN(stopLossLevel, resistLevel)
+						END IF
+
+						writelog("Определяю стоп-уровень для цены=" & avgEnterPrice & " Уровень стоп-лоса stopLossLevel=" & stopLossLevel)
+
+						transactionResult = createStopOrder("S", stopLossLevel)	'Пытаемся выставить стоп-лосс
+					ELSE	'Если позиция открыта в шорт
+						stop1 = 25 * (resistLevel - supportLevel) / 100		'стоп-лосс - четверть от движения
+						stop2 = avgEnterPrice / 100 * 2.5			'Риск на сделку
+						stopLoss = MIN(stop1, stop2)
+
+						stopLossLevel = avgEnterPrice + stopLoss
+
+						IF (supportLevel > 0)
+							stopLoss = MAX(stopLossLevel, supportLevel)
+						END IF
+
+						writelog("Определяю стоп-уровень для цены=" & avgEnterPrice & "Уровень стоп-лоса stopLossLevel=" & stopLossLevel)
+
+						transactionResult = createStopOrder("B", stopLossLevel)	'Пытаемся выставить стоп-лосс
+					END IF
+			
+
+					'Если выставление стоп-заявки не удалось
+					IF ( transactionResult <> 1)
+						writelog("Выставление стоп-зайвки не удалось")
+						'Снимаем (на всякий случай) все стоп-заявки
+						killAllStopOrders()
+					END IF
+					
+				ELSE
+					MESSAGE("Ошибка: Не могу определить цену для стопа-лоса и выставить стоп-лосс для сделки номер: [" & orderNumber & "]", 1)
+					writelog("Ошибка: Не могу определить цену для стопа-лоса и выставить стоп-лосс для сделки номер: [" & orderNumber & "]")
+				END IF
+
+			END IF
+
+		END IF
+
+	END IF		' End Open pos <> 0
+
+END FUNC
+
+
+
+
+
+
+'Функция определения средней цены по номеру сделки
+'orderNum - номер сделки
+FUNC getAvgPrice(orderNumber)
+	'Перебираем все исполенные сделки
+	n = GET_NUMBER_OF("TRADES")
+	
+	avgPrice = 0		'Средняя цена
+	avgCount = 0		'Количество сделок
+
+	FOR i from 1 to n
+		trade = GET_ITEM("TRADES", i)
+		num = GET_VALUE(trade, "ORDER_NUMBER") + 0
+
+		orderNumber = orderNumber + 0
+
+		IF ( orderNumber == num )
+			'Определяем по какой цене исполнилась заявка
+			price = GET_VALUE (trade, "PRICE") + 0				   ' Цена
+			count = GET_VALUE (trade,  "QUANTITY") + 0				   ' Количество
+			avgPrice = avgPrice + price
+			avgCount = avgCount + count
+		END IF
+	END FOR
+
+
+	'Если мы нашли исполненные заявки
+	IF (avgCount <> 0)
+
+		avgPrice = avgPrice / avgCount		'Вычисляем среднюю цену сделки
+
+	END IF
+
+
+	RESULT = avgPrice
+END FUNC

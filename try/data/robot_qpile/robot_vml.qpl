@@ -1,0 +1,236 @@
+PORTFOLIO_EX RobotVML;
+DESCRIPTION Робот VML (Уровни Вуди-Милованова);
+CLIENTS_LIST ALL_CLIENTS;
+FIRMS_LIST ALL_FIRMS;
+
+INCLUDE func.qpl, strategy_func.qpl, config.qpl;
+
+USE_CASE_SENSITIVE_CONSTANTS
+PROGRAM
+
+
+
+
+
+'************************************************
+'
+'Автор: Милованов Максим, http://isynapse.ru
+'
+'************************************************
+
+
+
+
+'********************* GLOBAL VARIABLES ********************'
+
+NEW_GLOBAL("orderNumber", 0)		'Номер транзакции, будет равен номеру сделки
+NEW_GLOBAL("fileData", fileData)	'Файл с сохраненными данными
+
+NEW_GLOBAL("resistLevel", 0)		'Уровень сопротивления
+NEW_GLOBAL("supportLevel", 0)		'Уровень поддержки
+NEW_GLOBAL("stopLoss", 0)		'Стоп-лосс
+
+NEW_GLOBAL("yearPart", 0)		'Текущий год
+NEW_GLOBAL("monthPart", 0)		'Текущий месяц
+NEW_GLOBAL("dayPart", 0)		'Текущий день
+NEW_GLOBAL("hourPart", 0)		'Текущий час
+NEW_GLOBAL("minutePart", 0)		'Текущий минута
+NEW_GLOBAL("secondPart", 0)		'Текущий секунда
+
+NEW_GLOBAL("candleOpen", 0)		'Открытие текущей свечи
+NEW_GLOBAL("candleHigh", 0)		'Максимум текущей свечи
+NEW_GLOBAL("candleLow", 0)		'Минимум текущей свечи
+NEW_GLOBAL("candleClose", 0)		'Закрытие текущей свечи
+
+NEW_GLOBAL("candlePrevOpen", 0)		'Открытие предыдущей свечи
+NEW_GLOBAL("candlePrevHigh", 0)		'Максимум предыдущей свечи
+NEW_GLOBAL("candlePrevLow", 0)		'Минимум предыдущей свечи
+NEW_GLOBAL("candlePrevClose", 0)	'Закрытие предыдущей свечи
+
+NEW_GLOBAL("timeFrame", 0)		'Таймфрейм
+
+NEW_GLOBAL("secCode", secCode)		'Код бумаги
+NEW_GLOBAL("secClass", secClass)	'Класс бумаги
+
+NEW_GLOBAL("canWriteLog", canWriteLog)	'Разрешено ли писать лог
+
+NEW_GLOBAL("dealsCount", 0)		'Количество сделок за текущий день
+
+NEW_GLOBAL("openPos", 0)		'количество открытых позиций
+
+'******************* END GLOBAL VARIABLES ******************'
+
+
+
+DELETE_ALL_ITEMS()
+
+
+getServerTime()
+
+
+prevOpenPos = openPos	'Предыдущие значение открытых позиций
+
+PAUSE(3000)	'Делаем паузу в 3 секунды, чтобы отрытые позиции и все другие все таблицы точно обновились
+openPos = getFuturesPosition(secCode)	'Определяем количество открытых позиций и в какую сторону открыта позиция по фьючерсу
+
+'Если изменилось количество открытых позиций
+IF (openPos <> prevOpenPos)
+	writelog("Значение открытых позиций изменилось с " & prevOpenPos & " на " & openPos)
+END IF
+
+
+'Определяем интервал в котором робот может совершать действия
+IF ( checkTime(hourPart, minutePart) == 1 )
+
+	'Получаем информацию о количестве сделок, сделанных за текущий день
+	error = ""
+	dealDay = READ_LINE(fileData, 1, error) + 0
+	dealsCount = READ_LINE(fileData, 2, error) + 0
+
+	'Если текущий день - новый, то перезаписываем файл
+	IF ( dealDay < dayPart )
+		writelog("Начался новый день")
+		dealsCount = 0
+		orderNumber = 0
+		saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, orderNumber)	'Сохраняем данные в файл
+	END IF
+
+
+
+	'Начинаем расчет уровней после старта торговой сессии
+	'IF ( (hourPart > 10) OR (hourPart == 10 AND minutePart > 0) )
+		'Если уровни не посчитаны, то считаем их
+		IF ( ((resistLevel == 0) OR (supportLevel == 0)) AND (isDebug == 0) )
+			writelog("Уровни не рассчитаны - вычисляю их")
+
+			calcLevels(candlesWatchCount)	'Вычисляем Уровни Вуди	
+			saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, orderNumber)	'Сохраняем данные в файл
+		END IF
+	'END IF
+
+
+
+	'Если режим отладки включен
+	IF ( isDebug == 1 )
+		resistLevel = debugResistLevel
+		supportLevel = debugSupportLevel
+		stopLoss = debugStopLoss
+	END IF
+
+
+
+
+
+	'Если позиция открыта, то пытаемся выставить стоп-лосс для исполненных заявок в рамках стратегии
+	IF ( openPos <> 0 )
+
+		IF ( canTrade == 1 ) 'Если совершать сделки разрешено
+			managePosition(openPos)		'управляем позицией и стоп-лоссом
+		END IF	   'End canTrade
+
+	ELSE
+		stopLoss = 25 * (resistLevel - supportLevel) / 100	'Максимальный стоп-лосс - четверть от движения или 3% на сделку (расчитывается во время входа в позицию)
+
+		'Определяем интервал в котором можем совершать сделки
+		IF ( (hourPart >= 11) AND (hourPart <= 18) )		'Сделка только в определенное время
+			'Если уровни рассчитаны
+			IF ( (resistLevel <> 0) AND (supportLevel <> 0) )
+				IF ( dealsCount < maxDealsCount )	'Количество сделок не достигло максимального количества
+
+
+					isFoundCurCandle = getCurCandle()	'Находим значения текущей свечи
+					isFoundPrevCandle = getPrevCandle()	'Находим значения предыдущей свечи
+					'Если предудущая свеча найдена
+					IF ( isFoundCurCandle == 1 AND isFoundPrevCandle == 1 )
+						'Если свеча закрылась выше уровня сопротивления и текущая цена тоже выше этого уровня (это для случая если выбивает по стопу - сразу не заходить относительно пред свечи)
+						IF ( candlePrevClose > 0 ) AND ( candlePrevClose > resistLevel ) AND ( candleClose > resistLevel )
+
+							writelog("Пытаюсь войти в сделку ЛОНГ")
+							transactionResult = createOrderByMarket("B", shareCount)	  'Открытие сделки в лонг
+
+							'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+							IF (transactionResult == 1)
+								'breakpoint()
+								writelog("Заявка с номером " & orderNumber & " отправлена")
+								avgPrice = getAvgPrice(orderNumber)	'Получаем среднюю цену исполнившейся заявки
+								
+								dealsCount = dealsCount + 1
+								writelog("Средняя цена сделки " & avgPrice & "; Текущее количество сделок=" & dealsCount)
+
+								saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, orderNumber)	'Сохраняем данные в файл
+							END IF
+						ELSE
+							IF ( candlePrevClose > 0 ) AND ( candlePrevClose < supportLevel ) AND ( candleClose < supportLevel )
+								writelog("Пытаюсь войти в сделку ШОРТ")
+								transactionResult = createOrderByMarket("S", shareCount)	  'Открытие сделки в шорт
+
+								'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+								IF (transactionResult == 1)
+									'breakpoint()
+									writelog("Заявка с номером " & orderNumber & " отправлена")
+									avgPrice = getAvgPrice(orderNumber)	'Получаем среднюю цену исполнившейся заявки
+									
+									dealsCount = dealsCount + 1
+									writelog("Средняя цена сделки " & avgPrice & "; Текущее количество сделок=" & dealsCount)
+
+									saveData(fileData, dayPart, dealsCount, resistLevel, supportLevel, orderNumber)	'Сохраняем данные в файл
+								END IF
+							END IF
+						END IF
+					END IF
+
+				
+				END IF
+			END IF
+		END IF
+
+	END IF
+
+END IF		'checkTime
+
+
+
+
+
+output = CREATE_MAP()
+output = SET_VALUE(output, "resistParam", resistLevel)
+output = SET_VALUE(output, "supportParam", supportLevel)
+output = SET_VALUE(output, "stopParam", stopLoss)
+output = SET_VALUE(output, "positionParam", openPos)
+	  
+ADD_ITEM(1, output)
+
+
+
+
+
+
+'-------------------- END MAIN PROGRAM --------------------------
+END_PROGRAM
+
+
+PARAMETER resistParam;
+PARAMETER_TITLE Сопротивление;
+PARAMETER_DESCRIPTION Сопротивление;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER supportParam;
+PARAMETER_TITLE Поддержка;
+PARAMETER_DESCRIPTION Поддержка;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER stopParam;
+PARAMETER_TITLE Стоп-лосс;
+PARAMETER_DESCRIPTION Стоп-лосс;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER positionParam;
+PARAMETER_TITLE Позиция;
+PARAMETER_DESCRIPTION Позиция;
+PARAMETER_TYPE STRING(30);
+END
+
+END_PORTFOLIO_EX

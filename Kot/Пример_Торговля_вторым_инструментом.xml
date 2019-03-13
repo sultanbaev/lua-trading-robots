@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-16"?>
+<GraphViewData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Options xsi:type="LabOptions">
+    <BarSize>5</BarSize>
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <IntervalBase>MINUTE</IntervalBase>
+    <Interval>1</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>2011-11-02T00:00:00+04:00</DateFrom>
+    <UseDateFrom>true</UseDateFrom>
+    <DateTo>2011-12-03T00:02:00</DateTo>
+    <UseDateTo>false</UseDateTo>
+    <DecompressMethod>Method1</DecompressMethod>
+    <TradeFromBar>0</TradeFromBar>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>false</RtUpdates>
+    <CalcForEachSecurity>true</CalcForEachSecurity>
+    <GraphOptions>
+      <BarSize>5</BarSize>
+      <Indent>0</Indent>
+      <HideValues>false</HideValues>
+      <IntervalBase>MINUTE</IntervalBase>
+      <Interval>1</Interval>
+    </GraphOptions>
+    <NotUsePositions>false</NotUsePositions>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <AutoEntryBars>0</AutoEntryBars>
+    <AutoCloseBars>0</AutoCloseBars>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <TakeProfitNoSlippage>false</TakeProfitNoSlippage>
+    <OpenPositionNoSlippage>false</OpenPositionNoSlippage>
+    <ByMarketAsLimt>false</ByMarketAsLimt>
+    <InvalidStopsByMarket>false</InvalidStopsByMarket>
+    <InitDeposit>0</InitDeposit>
+    <LabCalcType>Default</LabCalcType>
+    <TradeMode>All</TradeMode>
+  </Options>
+  <Template IsSubTemplate="false">
+    <Items>
+      <Item xsi:type="SecuritySourceItem" Name="Источник1" CodeName="var0">
+        <Center>
+          <X>50</X>
+          <Y>20</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Закрытие1</ItemName>
+        </Children>
+        <NotTradable>true</NotTradable>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="Закрытие1" CodeName="var1" ShowInputs="true">
+        <Center>
+          <X>180</X>
+          <Y>100</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>EMA</ItemName>
+          <ItemName>EMA1</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.Close, TSLab.Script.Handlers, Version=1.1.21.41, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="EMA" CodeName="EMA" ShowInputs="true">
+        <Center>
+          <X>340.66666666666652</X>
+          <Y>54.497332871106295</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПересеСнизу</ItemName>
+          <ItemName>ПересеСверху</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.EMA, TSLab.Script.Handlers, Version=1.1.21.41, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="EMA1" CodeName="EMA1" ShowInputs="true">
+        <Center>
+          <X>350.66666666666652</X>
+          <Y>152.4973328711063</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПересеСверху</ItemName>
+          <ItemName>ПересеСнизу</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.EMA, TSLab.Script.Handlers, Version=1.1.21.41, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="TwoOrMoreInputsItem" Name="ПересеСверху" CodeName="var2" ShowInputs="true">
+        <Center>
+          <X>549.66666666666652</X>
+          <Y>46.16399953777298</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>s</ItemName>
+          <ItemName>sb</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=1.1.21.41, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>EMA1</InputName>
+          <InputName>EMA</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="TwoOrMoreInputsItem" Name="ПересеСнизу" CodeName="var3" ShowInputs="true">
+        <Center>
+          <X>545.66666666666652</X>
+          <Y>147.7473328711063</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>b</ItemName>
+          <ItemName>ss</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossUnder, TSLab.Script.Handlers, Version=1.1.21.41, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>EMA1</InputName>
+          <InputName>EMA</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="s" CodeName="s" ShowInputs="true">
+        <Center>
+          <X>362.66666666666652</X>
+          <Y>272.08066620443958</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ss</ItemName>
+        </Children>
+        <Parameters>
+          <Parameter Name="Long" TypeName="bool" Value="False" />
+        </Parameters>
+        <Inputs>
+          <InputName>ИсточнДанных</InputName>
+          <InputName>ПересеСверху</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByMarketItem" Name="ss" CodeName="ss" ShowInputs="true">
+        <Center>
+          <X>368.66666666666652</X>
+          <Y>403.66399953777295</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>s</InputName>
+          <InputName>ПересеСнизу</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="b" CodeName="b" ShowInputs="true">
+        <Center>
+          <X>649.66666666666652</X>
+          <Y>269.08066620443958</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>sb</ItemName>
+        </Children>
+        <Parameters />
+        <Inputs>
+          <InputName>ИсточнДанных</InputName>
+          <InputName>ПересеСнизу</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByMarketItem" Name="sb" CodeName="sb" ShowInputs="true">
+        <Center>
+          <X>691.66666666666652</X>
+          <Y>388.66399953777295</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>b</InputName>
+          <InputName>ПересеСверху</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="SecuritySourceItem" Name="ИсточнДанных" CodeName="var4">
+        <Center>
+          <X>54.666666666666515</X>
+          <Y>378.08066620443958</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>s</ItemName>
+          <ItemName>b</ItemName>
+        </Children>
+        <NotTradable>false</NotTradable>
+      </Item>
+    </Items>
+    <Panes>
+      <Pane SizePct="70" Name="Главное" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="255" AltColor="0" Opacity="0" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" SourceName="Источник1" />
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16777216" AltColor="0" Opacity="0" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" SourceName="EMA1" />
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16777052" AltColor="0" Opacity="0" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" SourceName="EMA" />
+        </GraphsList>
+      </Pane>
+      <Pane SizePct="30" Name="Pane1" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16777012" AltColor="0" Opacity="0" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" SourceName="ИсточнДанных" />
+        </GraphsList>
+      </Pane>
+    </Panes>
+  </Template>
+  <Mappings>
+    <Sources>
+      <Source Name="Источник1">
+        <Records />
+      </Source>
+      <Source Name="ИсточнДанных">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters>
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="EMA" CodeName="EMA_Period" Visible="true" UsedInOptimization="false" TypeName="Double" Value="20" MinValue="10" MaxValue="100" Step="5" />
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="EMA1" CodeName="EMA1_Period" Visible="true" UsedInOptimization="false" TypeName="Double" Value="20" MinValue="10" MaxValue="100" Step="5" />
+    </Parameters>
+  </Mappings>
+  <Iterations>100</Iterations>
+  <OptParametersRecords />
+</GraphViewData>

@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>Робострой — Как “оживить” скользящую среднюю — Сообщество</title>
+	<meta name="title" content="Робострой — Как “оживить” скользящую среднюю — Сообщество"><meta name="google-site-verification" content="trCz4sxH92uoDT1LDcO76U3lftTV-_CRmLQ2kSu9H0w">
+	<meta name="yandex-verification" content="58c4dd8634c285ee">
+	<link rel="stylesheet" href="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/common.css">
+	
+	<!--[if lte IE 6]><link rel="stylesheet" href="/static/css/ie6.min.css?20140604">
+	<![endif]-->
+	<!--[if lte IE 7]><link rel="stylesheet" href="/static/css/ie7.min.css?20140604">
+	<![endif]-->
+	<link rel="shortcut icon" href="http://robostroy.ru/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" title="Заметки Робострой" href="http://robostroy.ru/rss.ashx">
+	
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/piwik.js" defer="defer" async="" type="text/javascript"></script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/dc.gif" async="" type="text/javascript"></script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_002.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_004.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jcarousellite.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_003.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/swfobject.js"></script>
+<script>Passport = { Settings: { Agent: 'http://robostroy.ru/agent.ashx', Agent64: 'aHR0cDovL3JvYm9zdHJveS5ydS9hZ2VudC5hc2h4', Area: 'robostroy', Root: 'https://passport.bcs.ru/', Url64: 'aHR0cDovL3JvYm9zdHJveS5ydS9jb21tdW5pdHkvYXJ0aWNsZS5hc3B4P2lkPTI2Ng==' }, Profile: { Id: null, EMail: null, Surname: null, Name: null, MiddleName: null, Birthdate: null, Client: null } };</script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy.js"></script><style media="screen" type="text/css">#flash-banner {visibility:hidden}</style></head>
+<body>
+<div id="body">
+	<iframe src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/check.htm" style="display: none"></iframe>
+	<div id="header">
+		<div class="logo">
+			<a href="http://robostroy.ru/"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy.png" alt="Робострой"></a>
+		</div>
+		<div id="linki" class="clearfix">
+			<ul class="about clearfix">
+				<li><a href="http://robostroy.ru/about/">О проекте</a></li>
+			</ul>
+			<ul class="social clearfix">
+				<li><!--noindex--><a rel="nofollow" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d266"><i class="facebook"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://twitter.com/share?text=%d0%a0%d0%be%d0%b1%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b9&amp;url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d266"><i class="twitter"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://vkontakte.ru/share.php?url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d266"><i class="vk"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://connect.mail.ru/share?url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d266&amp;title=%d0%a0%d0%be%d0%b1%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b9&amp;imageurl=http%3a%2f%2frobostroy.ru%2fimg%2frobostroy.png"><i class="moimir"></i></a><!--/noindex--></li>
+			</ul>
+			<ul class="passport clearfix">
+				<li><a class="enter" data-action="Passport.Logon()" href="http://robostroy.ru/#"><i class="lock"></i>Войти</a></li>
+				
+				<li><div class="vline"></div></li>
+				<li><a class="signup" data-action="Passport.Registration()" href="http://robostroy.ru/#">Зарегистрироваться</a></li>
+			</ul>
+		</div>
+		<div id="menubar">
+			<ul id="mainmenu" class="clearfix">
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/faq/" class="ia"><i class="robot"></i>Как создать<br>торгового робота<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/faq/webinar/">Вебинары</a></li>
+							<li><a href="http://robostroy.ru/faq/video/">Видеокурсы</a></li>
+							<li><a href="http://robostroy.ru/faq/library/">Библиотека</a></li>
+							<li><a href="http://robostroy.ru/faq/software/">Программы для разработки торговых роботов</a></li>
+							<li class="last"><a href="http://robostroy.ru/faq/drives/">Приводы</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/lab/" class="ia"><i class="lab"></i>Лаборатория<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/lab/mai.aspx">Пересечение скользящих средних</a></li>
+							<li><a href="http://robostroy.ru/lab/mawf.aspx">Скользящая средняя с фильтрацией</a></li>
+							<li class="last"><a href="http://robostroy.ru/lab/hi-low.aspx">Торговая стратегия на пробитие hi-low</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/community/" class="ia"><i class="people"></i>Сообщество<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=strategies">Стратегии</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=robots">Роботы</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=theory">Теория</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=technologies">Технологии</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=news">Новости</a></li>
+							<li class="last"><a href="http://robostroy.ru/community/default.aspx?cid=analytics">Торговые рекомендации</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/robots/" class="ia"><i class="dev"></i>Биржа роботов<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/robots/">Биржа роботов</a></li>
+							<li><a href="http://robostroy.ru/robots/monthly.aspx">Роботы</a></li>
+							<li><a href="http://robostroy.ru/robots/dev.aspx">Разработка роботов</a></li>
+							<li><a href="http://robostroy.ru/robots/audit.aspx">Аудит торговых систем</a></li>
+							<li class="last"><a href="http://robostroy.ru/robots/positions.aspx">Позиции торговых систем</a></li>
+						</ul>
+					</div>
+				</li>
+				
+			</ul>
+			<div id="b_menubar_searchform">
+				<form action="/search/" method="get">
+					<table>
+						<tbody><tr>
+							<td>
+								<input class="ysearch-text ysearch-text-logo" name="text">
+							</td>
+						</tr>
+					</tbody></table>
+					<input class="submit" value="" type="submit">
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="top-banner">
+		<object style="visibility: visible;" id="flash-banner" data="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/promo_01.swf" type="application/x-shockwave-flash" width="100%" height="55"><param value="opaque" name="wmode"></object>
+	</div>
+	
+	
+
+<div id="navigation">
+	<a href="http://robostroy.ru/">Главная</a>&nbsp;&nbsp;→&nbsp;&nbsp;<a href="http://robostroy.ru/community/">Сообщество</a>&nbsp;&nbsp;→&nbsp;&nbsp;<a href="http://robostroy.ru/community/article.aspx?id=266">Как “оживить” скользящую среднюю</a>
+</div>
+	<div id="wrapper" class="clearfix">
+		<div id="right">
+			<div class="shadow-box">
+				
+
+<div id="b_personal_card">
+	
+			<style>
+				iframe { display: none }
+				#avatar_upload_wnd { position: absolute; border: 1px solid #dcdcdc; padding: 1em; background-color: #fff; font: 11px Tahoma; z-index: 1001; display: none }
+				#avatar_upload_wnd input { width: 30em; border: 2px solid #dcdcdc; margin: 10px 0; padding: 3px; font: 10px Tahoma }
+				#avatar_upload_wnd i { position: absolute; top: 1em; right: 1em; width: 16px; height: 16px; background-position: left center; background-repeat: no-repeat; background-image: url(/static/img/icons/delete.gif); cursor: pointer }
+				#avatar_upload_wnd div { text-align: right }
+				#avatar_upload_wnd small { color: #666 }
+			</style>
+			<iframe src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/a.htm" name="process" id="process"></iframe>
+			<div id="avatar_upload_wnd">
+				<i></i>
+				<b>Выберите&nbsp;изображение</b><br>
+				<small>доступные&nbsp;форматы:&nbsp;PNG,&nbsp;GIF,&nbsp;JPEG</small>
+				<form method="post" action="/community/profile/profile.ashx" target="process" enctype="multipart/form-data">
+					<input name="action" value="profile.avatar.upload" type="hidden">
+					<input name="itoken" id="itoken2" value="" type="hidden">
+					<input id="file" name="avatarfile" title="Выбрать файл" type="file">
+				</form>
+				<div>
+					<button name="avatar.upload" title="Загрузить аватар">Загрузить аватар</button>
+				</div>
+			</div>
+			<script>
+			function UploadAvatar() {
+				$('#avatar_upload_wnd')
+					.show()
+					.find('button')
+						.click(function () {
+							if (!confirm('Загрузить новый аватар?')) return;
+							$('#avatar_upload_wnd').hide();
+							$('#process').load(function () {
+								var json = $('#process').contents().text();
+								if (json == 'ok') {
+									alert('Аватар успешно загружен!');
+									$('.b-image img').attr('src', Passport.Settings.Root + 'profile/avatar.ashx?id=' + Passport.Profile.Id);
+								} else {
+									alert(json);
+								}
+							});
+							$('#itoken2').val($('#itoken').val());
+							$('#avatar_upload_wnd form').submit();
+						});
+			}
+			</script>
+			<div class="b-head">
+				<div class="folder"></div>
+				<div class="b-image">
+					<img id="ctl00_ContentPlaceHolder1_PersonalCard_Avatar" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx">
+				</div>
+				<div class="b-desc">
+					<p class="nickname"><a id="ctl00_ContentPlaceHolder1_PersonalCard_linkLogin" href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a></p>
+					<div class="b-desc-options">
+						
+						
+						
+						
+						
+					</div>
+				</div>
+			</div>
+			<ul class="b-options">
+				
+				
+				
+				
+				
+				
+				
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optProfile">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkProfile" href="http://robostroy.ru/community/profile/default.aspx?id=157281"><i class="profile"></i>Профиль</a>
+				</li>
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optAssosiates">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkAssosiates" href="http://robostroy.ru/community/profile/friends.aspx?id=157281"><i class="associates"></i>Коллеги</a>
+				</li>
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optBlog">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkBlog" href="http://robostroy.ru/community/blog/Default.aspx?id=157281"><i class="blog"></i>Заметки</a>
+				</li>
+				
+			</ul>
+		
+</div>
+			</div>
+			<div class="shadow-box">
+				
+
+<div id="popular-ideas">
+	<h3>Популярные записи</h3>
+	
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=683">Пишем торгового робота на C#. Часть 1. Основы языка программирования и связь с терминалом</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=158468">Максим Милованов</a></p>
+					<p class="idea-comments"><i></i>56</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=765">Робот RSI с трейлинг-стопом на QLua</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>48</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=266">Как “оживить” скользящую среднюю</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157281">Flyanimal</a></p>
+					<p class="idea-comments"><i></i>42</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=339">Торговая система на основе пробоя ценового канала</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>36</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=453">Стратегия "спот-фьючерс" на примере торговли индексом в Tradematic Trader</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=158575">tradematic</a></p>
+					<p class="idea-comments"><i></i>35</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=560">Робот на простом паттерне</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>34</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=783">Qlua для чайников. Часть 4. Анализ информации из стакана и работа с заявками</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>34</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=788">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>33</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=425">Стратегия "Вход относительно открытия свечей старших таймфреймов"</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>32</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=283">Система управления портфелем акций на основе принципов парного трейдинга</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=135333">umoz</a></p>
+					<p class="idea-comments"><i></i>28</p>
+				</div>
+			</div>
+		
+</div>
+				
+		<div id="b_last_comments">
+			<div class="header">
+				<h3>Последние комментарии</h3>
+			</div>
+			
+					<div class="b-comment">
+						<p class="text">... Дело в том, что tb.bid_count представляет собой не целое число, а дробное, хотя и округленного до целого ...
+
+Параметр Тип Описание 
+bid_count STRING Количество котировок покупки</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192366" class="sign"><i></i>ardeo</a> → <a href="http://robostroy.ru/community/article.aspx?id=783" class="article">Qlua для чайников. Часть 4. Анализ информации из стакана и работа с заявками</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">function OnQuote(class_code, sec_code)
+	if class_code == p_class and sec_code==p_sec then
+		QL2=getQuoteLevel2(class_code, sec_code)
+		local i=tonumber(QL2.bid_count)
+		out_txt="BID: "..QL2.bid[i].price.."  "..QL2.bid[i].quantity..
+			"\nOFFER: "..QL...</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192366" class="sign"><i></i>ardeo</a> → <a href="http://robostroy.ru/community/article.aspx?id=778" class="article">Qlua для чайников. Часть 3. Работа со стаканом</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">Огромное спасибо за статью. Гениально и просто. а с 2011 года усовершенствовали метод ?</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192133" class="sign"><i></i>Zefir01</a> → <a href="http://robostroy.ru/community/article.aspx?id=228" class="article">Стратегия на свечных паттернах</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">забавно! скопировал код в новый файл с название _1 и заработало =) прям жуть!</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=191336" class="sign"><i></i>Lomonosov</a> → <a href="http://robostroy.ru/community/article.aspx?id=788" class="article">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">перестал работать скрипт с 1 части. Пишет ошибку 
+Syntax error while compiling "путь скрипта латиницей: путь скрипта 
+латиницей":1: unexpected symbol near 'п'. Удалял, писал заново - всё 
+одно и то же.</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=191336" class="sign"><i></i>Lomonosov</a> → <a href="http://robostroy.ru/community/article.aspx?id=788" class="article">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+					</div>
+				
+		</div>
+	
+			</div>
+		</div>
+		<div id="left">
+			<div class="shadow-box">
+				<div class="shadow-box-wrapper">
+					<div class="shadow-box-header">
+						<h3><span>Заметка</span></h3>
+					</div>
+					
+							<div id="b_article">
+								
+										
+										<div class="b-article-header">
+											<p class="title">Как “оживить” скользящую среднюю</p>
+											<div class="b-properties">
+												<ul class="properties">
+													<li class="sign"><i></i><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a></li>
+													<li class="label"><i></i><a href="http://robostroy.ru/community/default.aspx?cid=contest">Конкурс</a>, <a href="http://robostroy.ru/community/default.aspx?cid=robots">роботы</a>, <a href="http://robostroy.ru/community/soft.aspx?cid=wealthlab">wealth-lab</a></li>
+													<li class="time">29 февраля 2012 г.</li>
+												</ul>
+											</div>
+											<div class="vote">
+												<div class="r">
+													<a href="#" onclick="return mark_post(266, null, false)" class="button minus">&nbsp;</a> 10 <a href="#" onclick="return mark_post(266, null, true)" class="button plus">&nbsp;</a>
+												</div>
+											</div>
+											<div class="abuse">
+												<a href="javascript:ComplaintAdd(2,%20266)">Сигнал модератору</a>
+											</div>
+										</div>
+										<div class="b-article-body">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<p><em>О том, как делать автоматическую подстройку параметров
+ скользящей средней к текущей рыночной ситуации и получать с этого 
+прибыль.</em></p>
+											<p>Сегодня в арсенале любого трейдера присутствует огромное 
+количество всевозможных технических индикаторов различных типов. 
+Какие-то применяются чаще, какие-то реже, однако есть один инструмент, 
+которым мы пользуемся практически всегда и как бы по привычке – это 
+скользящие средние. Они по праву являются одним из самых популярных 
+методов анализа рынка, не смотря на относительную простоту расчетов и 
+очевидность интерпретации результатов. Среди наиболее известных 
+скользящих средних – простые, экспоненциальные и взвешенные. Эти три 
+типа индикаторов содержит любой пакет технического анализа. Однако здесь
+ мы будем говорить не о них, а о так называемых адаптивных скользящих 
+средних.</p>
+<p>Сразу надо отметить, что данная тема отнюдь не нова. Однако, как ни 
+странно, этим эффективным инструментам уделяется мало внимания, что 
+весьма несправедливо. Поэтому ниже мы постараемся ответить на вопрос, 
+что такое динамическая адаптация и как с ее помощью “оживить” 
+экспоненциальную скользящую среднюю. А в качестве результата наших 
+исследований, рассмотрим простую торговую систему.</p>
+<p><strong>Что за зверь</strong><strong>?</strong></p>
+<p>Итак, динамическая адаптация. Не смотря на некоторую “шероховатость” 
+данного словосочетания, суть достаточно проста. Поскольку мы работаем с 
+конкретным инструментом, скользящей средней, то будем все рассматривать 
+на ее примере.</p>
+<p>Начнем с самого простого. В качестве “модельной” стратегии возьмем 
+такую (всеми нами любимую): если цена пересекает скользящую среднюю 
+вверх – покупаем, если вниз – продаем. Скользящая средняя с длинным 
+периодом слабее реагирует на колебания рынка, нежели скользящая средняя с
+ коротким периодом. Это очень удобно, если рынок находится в фазе 
+среднесрочного или долгосрочного тренда (на всякий случай вспомним, что 
+скользящая средняя – это, в первую очередь, индикатор трендового 
+движения). В данном случае мы просто стоим в позиции (в лонге или шорте)
+ и, не реагируя на всякий шум и легкие коррекции, следуем основной 
+тенденции. Однако тренды, как и все хорошее, когда-нибудь заканчиваются и
+ нам нужно вовремя покинуть рынок. В идеале, конечно, здорово было бы 
+это сделать при первом же намеке на смену тенденции, но это удается 
+далеко не всегда. А если вы находитесь в позиции, выход из которой 
+управляется скользящей средней с длинным периодом, то время ожидания 
+может увеличиться значительно, затянувшись иногда на столько, что от 
+прибыли и вовсе ничего не остается. Кроме этого, скользящие средние с 
+длинным периодом также медленно реагируют на возобновление тренда, и, 
+зачастую, заходят в позицию уже тогда, когда большая часть направленного
+ движения безвозвратно упущена.</p>
+<p>Ну а в чем проблема? Давайте возьмем скользящую среднюю с коротким 
+периодом. Она более чувствительна к рынку, поэтому быстрее реагирует на 
+смену рыночных настроений. Это действительно так. Проблема заключается 
+лишь в одном – не каждое движение, на которое откликается такая быстрая 
+скользящая средняя, заканчивается хотя бы среднесрочным трендом. Отсюда 
+другая сторона медали – огромное количество ложных входов и 
+преждевременных выходов, вызванных чрезмерной чувствительностью данного 
+инструмента, делают его применение также не очень удобным.</p>
+<p>Как же быть? С одной стороны, хочется, чтобы скользящая средняя не 
+реагировала на каждый “чих” рынка, оставаясь как можно дольше в 
+фарватере трендового движения (т. е. здесь нам нужны свойства длинной 
+скользящей средней), с другой — хочется чтобы эта скользящая средняя 
+реагировала на рынок как можно более оперативно, когда он меняет 
+тенденцию (свойства короткой). Возможно ли такое? Оказывается да, хотя 
+идеальных решений, как вы понимаете, не бывает. А возможность этого 
+превращения из быстрой скользящей средней в медленную и обратно как раз и
+ называется методом динамической адаптации.</p>
+<p>Итак, под динамической адаптацией здесь понимается автоматическая 
+подстройка параметров индикатора в зависимости от текущего состояния на 
+рынке. Рассмотрим, как это происходит в экспоненциальной скользящей 
+средней. Ее формула (для цен закрытия) в классическом варианте такова:</p>
+<p align="center">EMA = Close*F + EMA<sub>-1</sub>*(1-F).</p>
+<p>Close – цена закрытия,</p>
+<p>EMA<sub>-1</sub> – предыдущее значение скользящей средней,</p>
+<p>F = 2/(n+1) – фактор сглаживания, n – период скользящей средней.</p>
+<p>Вся суть динамичности кроется в параметре F. Для того чтобы заставить
+ его меняться в зависимости от характера рынка, представим F как функцию
+ от какого-нибудь технического индикатора (конкретные реализации мы 
+рассмотрим ниже). При этом должны соблюдаться следующие условия: в 
+моменты высокой волатильности значение F должно быть как можно меньше. 
+Это означает, что n – период скользящей средней, должен быть достаточно 
+большим, чтобы не реагировать на случайные зашумления основной 
+тенденции. А в моменты трендового маловолатильного движения периоду 
+лучше уменьшаться (значение F при этом увеличивается), чтобы быть как 
+можно ближе к цене и, при необходимости, вовремя откликнуться на 
+изменение ситуации.</p>
+<p>Вкратце, динамическая адаптация выглядит именно так. При этом 
+заметим, что ее можно применять не только для скользящих средних, но и 
+для любого индикатора технического анализа, если в этом имеется 
+целесообразность. Но мы все же не будем уходить далеко, а сосредоточимся
+ на скользящих средних и посмотрим, как это работает на практике.</p>
+<p><strong></strong>&nbsp;</p>
+<p><strong>Немного формул</strong></p>
+<p>Как было сказано ранее, динамические скользящие средние уже давно не 
+являются прорывом в науке технического анализа. На сегодняшний день, 
+имеются несколько разновидностей этого инструмента, но наиболее 
+известные из них – VIDYA (Variable Index Dynamic Average) и динамическая
+ скользящая средняя Кауфмана (KAMA, Kaufman Adaptive Moving Average). 
+Что касается последней, то Пэрри Кауфман представил свою разработку еще в
+ 1995 году. Правда, если принять во внимание, что скользящие средние 
+начали применяться за 50 лет до этого момента, то эти инструменты можно 
+назвать относительно новыми. Рассмотрим вкратце работу каждого из них.</p>
+<p>VIDYA была предложена Тушаром Чендом. Для ее вычисления используется 
+осциллятор CMO, названный в честь разработчика Chande Momentum 
+Oscillator. По своей сути он напоминает RSI и вычисляется следующим 
+образом: отношение суммы положительных и отрицательных приращений за 
+период (период CMO) к их разности. Значение модуля СМО (абсолютного 
+значения) используется для вычисления динамического периода через фактор
+ сглаживания экспоненциальной скользящей средней следующим образом:</p>
+<p align="center">F(Динамический) = F*|CMO| = 2*|CMO|/(n+1)</p>
+<p>Подставляя F(Динамический) – динамический фактор сглаживания в 
+формулу для экспоненциальной скользящей средней вместо обычного F, 
+получаем формулу для VIDYA:</p>
+<p align="center">VIDYA = Close*F*|CMO| + VIDYA-1*(1 — (F*|CМО|)).</p>
+<p>Из данной формулы видно, что если цены растут или падают в активном 
+тренде, CMO имеет большое значение по абсолютной величине. При этом 
+динамическое значение F также высоко, что говорит о низкомдинамическом 
+периоде скользящей средней. А в этом случае VIDYA максимально близка к 
+графику цены и может оперативно реагировать на любые изменения рынка. 
+Напротив, когда движение цены замедляется или мы наблюдаем боковик в 
+рамках тренда, значение СМО приближается к нулю, а следовательно близко к
+ нулю и значение F, что говорит об увеличившемся динамическом периоде 
+скользящей средней. Предельный случай, если СМО=0, VIDYA будет двигаться
+ в горизонтальном направлении, абсолютно игнорируя любые колебания цен.</p>
+<p>Суть адаптивной скользящей средней Кауфмана (KAMA) аналогично VIDYA, 
+однако ее вычисления чуть более замысловаты. Для начала вводится 
+параметр эффективности рынка ER (efficiency ratio), который равен 
+отношению Сигнал/Шум. Сигнал вычисляется как модуль разности текущей 
+цены и цены n периодов назад:</p>
+<p align="center">|Close[bar] – Close[bar-n]|</p>
+<p>(индикатор Momentum по сути). Для того чтобы вычислить Шум, необходимо взять сумму модулей приращений цены за период n:</p>
+<p align="center">|Close[bar] – Close[bar-1]|+…+|Close[bar-n-1] – Close[bar-n]|</p>
+<p>В результате мы получим коэффициент, который меняется от 0 до 1. При 
+абсолютном шуме ER будет близок к нулю, а если на рынке наблюдается 
+тренд, ER будет близок к 1. Теперь используем ER для придания 
+динамичности экспоненциальной скользящей средней через фактор 
+сглаживания F. Поскольку мы должны переключаться от быстрой скользящей 
+средней к медленной и наоборот, сам автор советует выбрать два крайних 
+значения: 2 и 30 соответственно. Тогда F(быстрый) = 2/(2+1) = 0,66, а 
+F(медленный) = 2/(30+1) = 0,064.Динамический фактор определяется так:</p>
+<p align="center">F(динамический) = ER*( F(быстрый) — F(медленный)) + F(медленный)</p>
+<p>или:</p>
+<p align="center">F(динамический) = ER*0,6021 + 0,0645.</p>
+<p>Таким образом, мы получили динамический фактор, который, если его 
+подставить в формулу для экспоненциальной скользящей средней, и даст нам
+ KAMA.</p>
+
+<p align="center">&nbsp;<!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=385" target="_blank" rel="nofollow"><img id="post_image_=385" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image_002.jpeg" alt="" width="580" height="272"></a><!--/noindex--></p>
+<p align="center">Рис 1</p>
+<p>На рисунке 1 представлены графики VIDYA (голубая линия), KAMA (синяя 
+линяя)&nbsp;и ЕМА (фиолетовая линия). Можно увидеть, что при трендовом 
+движении динамические линии находятся ближе к цене и, если возникает 
+шум, немного удаляются от нее, чтобы избежать преждевременного выхода. 
+Если тенденция меняется – динамические линии просто выпрямляются.</p>
+<p><strong>&nbsp;</strong></p>
+<p><strong>А деньги где?</strong></p>
+<p>Перейдем, наконец, к самому интересному – построению торговой системы
+ с использованием адаптивных скользящих средних. Надо сказать, что, к 
+нашему счастью, и VIDYA, и KAMA (а кроме них – другие разновидности 
+динамических скользяшек) входят в библиотеку встроенных инструментов 
+технического анализа различных систем разработок МТС, в частности 
+WealthLab. Это значительно облегчает нам работу.</p>
+<p>В качестве основной динамической средней была взята КАМА – 
+исключительно субъективное решение. Правда, дополнительным доводом в ее 
+пользу может служить и то, что она по сути использует только один 
+параметр – длину анализируемого интервала для ER. Сама система проста, 
+поэтому, без излишней лирики перейдем к формальному описанию правил 
+входа и выхода.</p>
+<p><span style="text-decoration: underline;">Правила входа:</span></p>
+<p>Входим в лонг, если у нас состоялось пересечение графика цены и 
+кривой Кауфмана вверх, а цена закрытия должна быть выше скользящей 
+средней. Входим по рынку.</p>
+<p>Входим в шорт если у нас состоялось пересечение графика цены и кривой
+ Кауфмана вниз, а цена закрытия должна быть выше скользящей средней. 
+Входим по стоп-приказу – уровень минимальной цены за последние 5 баров.</p>
+<p><span style="text-decoration: underline;">Правила Выхода:</span></p>
+<p>Для лонга выходим, если цена опустилась ниже двух ATR от цены High предыдущей свечи.</p>
+<p>Для шорта выходим, если цена поднялась выше двух ATR от цены Low предыдущей свечи.</p>
+<p><span style="text-decoration: underline;">Параметры стратегии:</span></p>
+<p>Инструмент – фьючерс на индекс RTS</p>
+<p>Работает на 15-минутном масштабе (шорты и лонги)</p>
+<p>Интервал тестирования: 1/09/2010 по 28/02/2012</p>
+<p>Работаем 1 контрактом, начальный капитал 200000</p>
+<p>Работают лонги и шорты</p>
+<p>Проскальзывание + комиссия = 20 пунктов</p>
+<p><span style="text-decoration: underline;">Оптимизируемые параметры</span></p>
+<p>Параметр KAMA</p>
+<p>Параметр ATR</p>
+<p>Параметр скользящей средней</p>
+<p>Результаты тестирования ниже. На рисунке 2 – кривая капитала.</p>
+
+<p align="center"><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=386" target="_blank" rel="nofollow"><img id="post_image_=386" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image.jpeg" alt="" width="580" height="296"></a><!--/noindex--></p>
+<p align="center">Рис 2</p>
+<p>Надо сказать, что кривая получена после оптимизации и, вероятно, в 
+жизни результаты будут более скромными. Тем не менее, не будем забывать,
+ что у нас в стратегии используется всего 3 оптимизируемых параметра.</p>
+<p>Среди наиболее важных характеристик выделим доходность: 65,7%, 
+просадка: 4,94%, Profit Factor: 1,57. Что, согласитесь, достаточно 
+сносно для стратегии “без претензий”, что называется. Если на FORTS 
+взять хотя бы 2-3 плечо, может быть уже значительно интересней. Более 
+подробные результаты бэктестинга в таблице 1. Код стратегии в WealthLab 
+прилагается.</p>
+<div align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="552">
+<tbody>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" valign="bottom" width="87">
+<p><strong>All Trades</strong></p>
+</td>
+<td nowrap="nowrap" valign="bottom" width="87">
+<p><strong>Long Trades</strong></p>
+</td>
+<td nowrap="nowrap" valign="bottom" width="87">
+<p><strong>Short Trades</strong></p>
+</td>
+<td nowrap="nowrap" valign="bottom" width="103">
+<p><strong>Buy &amp; Hold</strong></p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Starting Capital</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">200&nbsp;000,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">200&nbsp;000,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">200&nbsp;000,00р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">200&nbsp;000,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Ending Capital</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">462&nbsp;851,23р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">347&nbsp;073,83р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">315&nbsp;777,40р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">242&nbsp;330,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Net Profit</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">262&nbsp;851,23р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">147&nbsp;073,83р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">115&nbsp;777,40р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">42&nbsp;330,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Net Profit %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">131,43%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">73,54%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">57,89%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">21,17%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Annualized Gain %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">65,68%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">39,33%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">31,63%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">12,25%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Exposure</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">41,76%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">28,60%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">21,93%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">70,25%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Total Commission</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-18&nbsp;150,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-11&nbsp;310,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-6&nbsp;840,00р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">-10,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Return on Cash</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Margin Interest Paid</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Dividends Received</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,00р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Number of Trades</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">908</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">566</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">342</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">1</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Profit</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">289,48р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">259,85р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">338,53р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">42&nbsp;330,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Profit %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,18%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,17%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">0,20%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">32,58%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Bars Held</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">20,82</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">20,1</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">22,01</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">22&nbsp;945,00</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Winning Trades</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">380</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">249</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">131</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">1</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Win Rate</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">41,85%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">43,99%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">38,30%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">100,00%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Gross Profit</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">723&nbsp;791,37р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">422&nbsp;981,50р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">300&nbsp;809,87р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">42&nbsp;330,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Profit</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1&nbsp;904,71р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1&nbsp;698,72р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">2&nbsp;296,26р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">42&nbsp;330,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Profit %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,18%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,06%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,39%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">32,58%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Bars Held</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">34,02</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">32,59</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">36,73</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">22&nbsp;945,00</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Max Consecutive Winners</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">8</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">8</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">7</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">1</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Losing Trades</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">528</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">317</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">211</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Loss Rate</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">58,15%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">56,01%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">61,70%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Gross Loss</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-460&nbsp;940,14р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-275&nbsp;907,67р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-185&nbsp;032,47р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Loss</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-872,99р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-870,37р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-876,93р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Loss %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-0,54%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-0,54%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-0,54%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,00%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Average Bars Held</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">11,31</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">10,28</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">12,86</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Max Consecutive Losses</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">10</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">9</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">10</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Maximum Drawdown</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-18&nbsp;111,31р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-15&nbsp;327,74р.</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-13&nbsp;536,36р.</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">-90&nbsp;700,00р.</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Maximum Drawdown Date</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">19.08.2011</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">05.10.2011</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">31.08.2011</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">04.10.2011</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Maximum Drawdown %</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-4,94%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-4,96%</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">-5,81%</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">-32,52%</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Maximum Drawdown % Date</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">19.08.2011</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">05.10.2011</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">18.01.2011</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">04.10.2011</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">&nbsp;</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Wealth-Lab Score</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">149,51</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">130,69</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">135,83</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">11,76</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Sharpe Ratio</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">4,85</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">4,51</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,84</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,56</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Profit Factor</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,57</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,53</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,63</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">бесконечность</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Recovery Factor</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">14,51</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">9,6</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">8,55</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0,47</p>
+</td>
+</tr>
+<tr>
+<td nowrap="nowrap" valign="bottom" width="189">
+<p>Payoff Ratio</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">2,17</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">1,97</p>
+</td>
+<td nowrap="nowrap" width="87">
+<p align="center">2,55</p>
+</td>
+<td nowrap="nowrap" width="103">
+<p align="center">0</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p align="center">Таблица 1</p>
+<p align="center">&nbsp;</p>
+<p align="center"><strong>Код стратегии в WealthLab 5.0</strong></p>
+
+<p>using System;<br>using System.Collections.Generic;<br>using System.Text;<br>using System.Drawing;<br>using WealthLab;<br>using WealthLab.Indicators;</p>
+<p>namespace WealthLab.Strategies<br>{<br>&nbsp;public class KAMAStrategy : WealthScript<br>&nbsp;{<br>&nbsp;&nbsp;StrategyParameter _atrper;//5<br>&nbsp;&nbsp;StrategyParameter _kamaper;//7<br>&nbsp;&nbsp;StrategyParameter _emaper;//8<br>&nbsp;&nbsp;StrategyParameter _perL;//5<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;public KAMAStrategy()<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp; _perL = CreateParameter("perL", 10, 5, 15, 1);<br>&nbsp;&nbsp;&nbsp;_atrper = CreateParameter("atrper", 10, 5, 20, 1);<br>&nbsp;&nbsp;&nbsp;_kamaper = CreateParameter("kamaper", 10, 5, 30, 1);<br>&nbsp;&nbsp;&nbsp;_emaper = CreateParameter("emaper", 10, 5, 30, 1);</p>
+<p>&nbsp;&nbsp;}<br>&nbsp;&nbsp;protected override void Execute()<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;int perL = _perL.ValueInt;<br>&nbsp;&nbsp;&nbsp;int atrper = _atrper.ValueInt;<br>&nbsp;&nbsp;&nbsp;int kamaper = _kamaper.ValueInt;<br>&nbsp;&nbsp;&nbsp;int emaper = _emaper.ValueInt;<br>&nbsp;&nbsp;&nbsp;double HighFractalPrice = 0;<br>&nbsp;&nbsp;&nbsp;bool ReadyToEnterLong = false;<br>&nbsp;&nbsp;&nbsp;bool ReadyToEnterShort = false;<br>&nbsp;&nbsp;&nbsp;KAMA kama = KAMA.Series((High+Low+Close)/3, kamaper);<br>&nbsp;&nbsp;&nbsp;SMA ema = SMA.Series(Close, emaper);<br>&nbsp;&nbsp;&nbsp;ATR atr = ATR.Series(Bars, atrper);<br>&nbsp;&nbsp;&nbsp;//DataSeries HH = Highest.Series(High, 5);<br>&nbsp;&nbsp;&nbsp;DataSeries LL = Lowest.Series(Low, perL);<br>&nbsp;&nbsp;&nbsp;for(int bar = 20; bar &lt; Bars.Count; bar++)<br>&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;if (IsLastPositionActive)<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if( LastPosition.PositionType == PositionType.Long )<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SellAtStop(bar+1, LastPosition, High[bar] — 2*atr[bar], "Exit Long");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if( LastPosition.PositionType == PositionType.Short )<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CoverAtStop(bar+1, LastPosition, Low[bar] + 2*atr[bar], "Exit Short");</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;else<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (CrossOver(bar,Close, kama))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterLong = true;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (ReadyToEnterLong &amp;&amp; CrossUnder(bar, Close, kama))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterLong = false;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (ReadyToEnterLong &amp;&amp; ema[bar] &lt; Close[bar])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BuyAtMarket(bar+1, "Enter Pos Long");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//BuyAtStop(bar+1, HH[bar-1], "Enter Pos Long");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterLong = false;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (CrossUnder(bar, Close, kama))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterShort = true;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (ReadyToEnterShort &amp;&amp; CrossOver(bar, Close, kama))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterShort = false;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (ReadyToEnterShort &amp;&amp; ema[bar] &gt; Close[bar])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ShortAtStop(bar+1, LL[bar-1], "Enter Pos Short");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyToEnterShort = false;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;PlotSeries(PricePane, kama, System.Drawing.Color.Blue, WealthLab.LineStyle.Solid, 2);<br>&nbsp;&nbsp;&nbsp;PlotSeries(PricePane, ema, System.Drawing.Color.Cyan, WealthLab.LineStyle.Solid, 2);</p>
+<p>&nbsp;&nbsp;}<br>&nbsp;}<br>}</p>
+<p><strong>Сравнение КАМА и ЕМА: зависимость годовой доходности стратегии (по вертикали) от параметра скользящей средней (по горизонтали)</strong></p>
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=395" target="_blank" rel="nofollow"><img id="post_image_=395" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image.ashx" alt="" width="580" height="349"></a><!--/noindex--></p>
+
+<p><em>Автор: Максим Ремизов</em></p>
+											
+										</div>
+									
+								
+	<div class="b-social">
+		<div class="nets">
+			<div class="facebook"></div>
+			<div class="vk"><span>0</span></div>
+			<div class="twitter"><span>0</span></div>
+			<div class="odnoklassniki"><span>0</span></div>
+		</div>
+		<div class="print">
+			<a href="javascript:window.print();" title="Распечатать страницу"><i></i>Распечатать</a>
+		</div>
+	</div>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/social.js"></script>
+
+								<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/article.js"></script>
+							</div>
+							<div class="shadow-box-header-lgray">
+								<h3><a name="comments"></a><span>Комментарии</span></h3>
+							</div>
+							<div id="b_comments">
+								
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_012.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=154958">WizzieFoggs</a> — 29 февраля 2012 г.</p>
+												<p class="text">Хы, ну вы будете смеяться, но мне почему-то 
+пришлось дойти до этого самому буквально неделю назад. Да, видимо надо 
+читать книжки умные, что ли... Но я привык все решать самостоятельно. 
+Аналогичным образом экспериментирую...</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 638, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 638, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20638)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 1 марта 2012 г.</p>
+												<p class="text">2WizzieFoggs<br>Самостоятельно - лучше всего, больше маневров для оригинальных решений, так что все верно))<br>Лично
+ я про данную тему в первый раз читал года 3-4 назад. Но поскольку тогда
+ тестирование происходило на истории 2005-2008гг, когда рынок безудержно
+ рос, то большой разницы между простыми скользяшками и динамическими 
+увидеть было сложно. Сейчас характер рынка изменился, и мы можем 
+наблюдать, что некоторый эффект относительно обычных скользящих средних 
+все таки имеется.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 640, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 640, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20640)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_009.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=154051">Николай Камынин</a> — 2 марта 2012 г.</p>
+												<p class="text">Достаточно подробно это изложено Константином Копыркиным Статья "Динамические скользящие средние".<br>журнал Современный трейдинг №5-6 за 2001 год</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 642, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 642, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20642)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_008.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157812">Yuro</a> — 2 марта 2012 г.</p>
+												<p class="text">А вы не пробовали ту же систему с VIDYA? 
+Вообще, как мне кажется, суть "динамичности" заключается в том, что они 
+реализуют некий скользящий стоп, который лучше реагирует на 
+волатильность, чем обычные скользящие средние. Но это, конечно, им плюс 
+за это)) Хотя на выход у вас свой скользящий стоп... Интересно для 
+эксперимента - если выходить по этим кривым динамическим - хуже 
+получается?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 644, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 644, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20644)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_013.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157815">selere1</a> — 2 марта 2012 г.</p>
+												<p class="text">А с какой целью введены логические переменные, значения которых переприсваиваются после кросинга kama и Close?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 646, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 646, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20646)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 2 марта 2012 г.</p>
+												<p class="text">Николай, именно с этой статьи и началось мое знакомство с этим инструментом))</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 649, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 649, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20649)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 2 марта 2012 г.</p>
+												<p class="text">Yuro, VIDYA я не пробовал в деле, а выбор 
+KAMA, как я писал - это чисто субъективно + у нее всего один 
+оптимизируемый параметр (вместо двух у VIDYA), что тоже хорошо.  
+Касательно скользящего стопа, думаю, вы правы, в нектором смысле это он и
+ есть, но я действительно использовал другой стоп - он более 
+чувствительный и система дает с ним лучшие характеристики.<br><br>selere1,
+  логические переменные там нужны для того, чтобы указать на готовность 
+системы ко входу, а именно - после кросинга kama и Close, система в 
+позицию не входит, но при этом уже знает, что одно из условий входа 
+выполнено, о чем ей как раз и говорит логическая переменная.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 650, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 650, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20650)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_010.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157176">orekton</a> — 2 марта 2012 г.</p>
+												<p class="text">"после кросинга kama и Close, система в позицию не входит, но при этом уже знает, что одно из условий входа выполнено" <br>Зачем было вводить дополнительные условия?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 661, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 661, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20661)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 3 марта 2012 г.</p>
+												<p class="text">orekton, дополнительные условия - это просто
+ фильтр на вход, т. е. мы не входим сразу после пересечения KAMA и 
+графика цены, а ждем дополнительного условия, которое, в случае своей 
+реализации, уже дает сигнал на вход в позицию (если первое условие еще в
+ силе))).</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 662, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 662, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20662)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_010.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157176">orekton</a> — 3 марта 2012 г.</p>
+												<p class="text">Flyanimal, в чем заключается дополнительное условие? Насколько хуже результаты без его использования?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 663, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 663, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20663)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_002.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157841">ALendi</a> — 3 марта 2012 г.</p>
+												<p class="text">С чего посоветуете начать изучение C#? 
+Кое-какие навыки программирование есть. Существует пособие по языку, 
+заточенное именно под создание МТС?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 664, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 664, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20664)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 3 марта 2012 г.</p>
+												<p class="text">orekton, под дополнительным условием здесь 
+подразумевается, что после пересечения КАМА вверх, цена должна подняться
+ и выше уровня скользящей средней.  При этом не всегда возможна ситуация
+ входа в позицию, когда мы уже пересекли скользящую среднюю, поскольку в
+ процессе ожидания этого события цена могла уйти ниже КАМА, такое тоже 
+возможно.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 668, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 668, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20668)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 3 марта 2012 г.</p>
+												<p class="text">ALendi, книг по С# существует огромное 
+количество, посоветовать что-то конкретно затрудняюсь. Есть ли что-то 
+непосредственно под МТС - для C# я не встречал, хотя для Pascal есть 
+(версии 4х WealthLab). В действительности, чтобы писать МТС в том же 
+WealthLab, обладать какими-то виртуозными навыками программирования не 
+требуется. Все необходимые функции и переменные уже встроены в систему 
+бэк-тестинга, поэтому от разработчика требуется не так уж много. К тому 
+же у WealthLab просто потрясающий help с подробными примерами на С#.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 669, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 669, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20669)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_008.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157812">Yuro</a> — 4 марта 2012 г.</p>
+												<p class="text">Fanimal, мне почему VIDYA интересна - не 
+замечали вы, что если взять вариант WealthLab, то она выглядит как-то 
+странно. Делать или смотреть что-то по ней бессмысленно. Просто, если я 
+не ошибаюсь, она у вас изображена на рисунке и там такая же ситуация.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 670, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 670, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20670)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_008.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157812">Yuro</a> — 4 марта 2012 г.</p>
+												<p class="text">Flyanimal, сорри за очепятку))</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 671, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 671, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20671)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 4 марта 2012 г.</p>
+												<p class="text">Yuro, VIDYA на картинке есть, это точно. 
+Правда она не совсем отвечает формуле, которую мы упоминали в статье (и 
+которую предложил Тушар Ченд))): VIDYA = Close*F*|CMO| + VIDYA(-1)*(1 - 
+(F*|CМО|)). Но это не глюк WelthLab. В своем описании этого инструмента 
+они требуют наличие параметра (переменной), который бы выражал 
+волатильность. пользуясь им, они просто делают %-ый отступ от VIDYA. Об 
+этом написано здесь: http://www2.wealth-lab.com/WL5Wiki/Vidya.ashx</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 675, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 675, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20675)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 4 марта 2012 г.</p>
+												<p class="text">Yuro, вот код VIDYA, которая будет работать так, как описано в статье:<br><br>using System;<br>using System.Collections.Generic;<br>using System.Text;<br>using System.Drawing;<br>using WealthLab;<br>using WealthLab.Indicators;<br><br>namespace WealthLab.Strategies<br>{<br>	public class VIDYA : DataSeries<br>	{<br>		public VIDYA (DataSeries ds, int vidyaPer, int vidyaSmooth) : base (ds, "VIDYA Series")<br>		{<br>			int Smooth = vidyaSmooth;<br>			double SC = (double)2/(Smooth+1);<br>			CMO cmo = CMO.Series(ds, vidyaPer);<br><br>			for (int bar=1; bar<ds.count; bar++)<br="">			{<br>				if (bar==vidyaPer)<br>					this[vidyaPer] = ds[vidyaPer];<br>				else if (bar&gt;vidyaPer)<br>					this[bar]=SC*Math.Abs(cmo[bar]/100)*ds[bar] +(1 - (SC*Math.Abs(cmo[bar]/100)))*this[bar-1];<br>			}<br>		}<br><br>		public static VIDYA Series (DataSeries ds, int vidyaPer, int vidyaSmooth)<br>		{<br>			VIDYA _VIDYA = new VIDYA(ds, vidyaPer, vidyaSmooth);<br>			return _VIDYA;<br>		}<br>	}<br><br>	public class PlotVIDYA : WealthScript<br>	{<br>		protected override void Execute()<br>		{<br>			int Per = 20;<br>			int Smooth=13;<br>			<br>			DataSeries VIDYA_Series = VIDYA.Series(Close, Per, Smooth);<br>			PlotSeries(PricePane, VIDYA_Series, Color.Blue, LineStyle.Solid, 2);<br>			<br>			for(int bar = 20; bar &lt; Bars.Count; bar++)<br>			{<br>				//PrintDebug(VIDYA_Series[bar]);<br>				if (IsLastPositionActive)<br>				{<br>					//code your exit rules here<br>				}<br>				else<br>				{<br>					//code your entry rules here<br>				}<br>			}<br>		}<br>	}<br>}</ds.count;></p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 676, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 676, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20676)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_008.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157812">Yuro</a> — 4 марта 2012 г.</p>
+												<p class="text">Flyanimal, разъяснили ситуацию. Жаль, что я в С# не особо разбираюсь, но за код спасибо)</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 682, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 682, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20682)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_007.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=20351">yurikon</a> — 5 марта 2012 г.</p>
+												<p class="text">Добрый день!<br><br>Слишком много сделок - 
+средняя сделка 0.15%. Добавьте сюда проскальзывание, уберите первую 
+минуту после начала торгов и клиринга и от прибыли ничего не останется. 
+Мувинги сами по себе довольно сильно загоняют рынок в рамки, поэтому и 
+работают не фонтан. Хотя на трендовых участках будут радовать.<br><br>С уважением.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 690, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 690, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20690)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 6 марта 2012 г.</p>
+												<p class="text">yurikon, здравствуйте! Согласен с вами. 
+Сделок, как для трендовой системы, многовато и средняя прибыль на сделку
+ маленькая. Проскальзывание я тоже установил небольшое, но, как для 
+одного контракта, по-моему нормально - за одну сделку в рынок мы отдаем 
+20 пунктов... ну маловато, согласен. Но здесь возможны варианты - можно 
+взять тайм-фрейм часовик, это нам уменьшит и количество сделок и 
+поднимет среднюю прибыль на них, что может нивилировать эффект бОльшего 
+проскальзования.  Доходность, конечно, тоже уменьшится, раза в 2. Ближе к
+ вечеру я могу запостить резалты.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 695, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 695, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20695)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_009.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=154051">Николай Камынин</a> — 6 марта 2012 г.</p>
+												<p class="text">Добрый день,Flyanimal!<br>Хочу обратить Ваше внимание на следующий факт в Вашем исследовании.<br>Так как Вы моделируете торговлю лишь одним контрактом, то задания величины капитала является избыточным параметром.<br>По
+ Вашим результатам у Вас Exposure&lt;70%, это значит что как минимум 30%
+ указанного вами капитала просто зря валяются на депозите. Поэтому их 
+можно было сразу из эксперимента исключить. Т.е. нодо считать 
+эффективность Вашего эксперимента исходя из капитала примерно в 140 000 а
+ не 200000. <br>В противном случае, почему бы не указать что на депозите миллиард а вы торгуете одним контрактом.<br>Т е ограничение числа контрактов автоматом ограничивает учитываемую сумму на депозите</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 696, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 696, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20696)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_006.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157867">apis78</a> — 6 марта 2012 г.</p>
+												<p class="text">Хотелось бы попробовать  KAMA  на реальном счёте, есть код стратегии для Wealth Lab 4 ???????</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 699, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 699, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20699)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 7 марта 2012 г.</p>
+												<p class="text">yurikon, здравсвуйте! Для этой же стратегии 
+был установлен часовой масштаб и комиссия + проскальзывание = 60 пнктов 
+(покупка+продажа, в одну сторону 30 пунктов), период истории такой же. 
+Всю таблицу по результатам работы выкладывать не буду, отдельные 
+показатели таковы:<br><br>Annualized Gain %	38,24%<br>Number of Trades	188<br>Average Profit	696,36р.<br>Average Profit %	0,43%<br>Maximum Drawdown %	-14,43%<br>Profit Factor	1,66<br>Самое
+ обидное здесь - это большая просадка. В абсолютных величинах - 37 тыс. 
+пунктов, при работе одним контрактом. Хорошие нужно иметь нервы) Но 
+таковы резалты.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 703, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 703, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20703)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 7 марта 2012 г.</p>
+												<p class="text">Николай, здравсвуйте! Вы правы, капитал 
+здесь используется не особо эффективно, система money management здесь 
+вообще отсутствует (это, надо заметить, самая популярная система 
+управления капиталом ))) ДА, с точки зрения полной работы капитала луше 
+входить либо постоянной суммой и от нее считать доходнсть, либо % эквити
+ (). Здесь хотелось продемонстрировать работу динамических скользящих 
+средних. Хотя работа с капиталом на итоговые результаты, конечно 
+повлияет. <br><br>apis78, здравствуйте! Нет данная стратегия написана на
+ С#, для Pascal у меня версии нет. Но, если я не ошибаюсь, есть 
+конвертор Велс-скриптов, который поможет из кода на С# получить на 
+выходе Pascal</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 704, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 704, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20704)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_009.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=154051">Николай Камынин</a> — 7 марта 2012 г.</p>
+												<p class="text">Добрый день,Flyanimal!<br>Хочу положить ложку дегтя в Вашу бочку меда.<br>В статье Вы фактически ничего не доказали. <br>Т.е.
+ Вы декларировали предположение, что изменение постоянной времени 
+скользящей средней должно дать положительный эффект в результатах 
+торговли. Потом Вы изложили своими словами два способа изменения 
+параметра.  Наглядный рисунок индикаторов лишь указывает, что Вы 
+завысили величину коэффициента для EMA, поэтому этот индикатор более 
+инертный.<br>Касалось бы , для подтверждения Вашего предположения, <br>необходим сравнительный эксперимент стратегия с КАМА и с EMA. <br>Тогда Ваше изначальное предположение имело бы если не доказательство, <br>то хотя бы иллюстрацию положительного результата. <br>Но именно это Вы и не показали.<br>Так что Увы.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 705, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 705, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20705)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 7 марта 2012 г.</p>
+												<p class="text">Николай, какой уж тут мед, тоже скажите) <br>По
+ правде говоря, у меня не было задачи что-то доказать или навязать, тем 
+более тема не нова. Но соглашусь с Вами, что для полноты картины 
+желательно подтвердить не словами, а экспериментальными результатами 
+преимущество той же KAMA над EMA. Это хорошее предложение, если я Вас 
+правильно понял. Года 3 назад подобный опыт я делал для VIDYA и 
+оказалось, что разницы почти никакой – обе работают одинаково плохо. На 
+мой взгляд, это не служит доказательством или опровержением того, что 
+EMA хуже или лучше VIDYA. Все зависит от "контекста", в котором данный 
+инструмент применяется. А если на истории... в этом случае почти всегда 
+можно сделать конфетку сами знаете из чего.<br>Тем не менее, предлагаю 
+тот же опыт провести и с KAMA, только в рамках простой стратегии – 
+кроссинг вверх – купили, кроссинг вниз – продали.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 707, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 707, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20707)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 8 марта 2012 г.</p>
+												<p class="text">Было проведено сравнение KAMA и EMA в рамках
+ стратегии - кросинг вверх - покупка, вниз - продажа. Как и 
+предполагалось, КАМА и EMA работают почти одинаково в определенной части
+ диапазона параметра (нижний диапазон), но дальше EMA превосходит КАМА, 
+что связано уже с ее особенностями построения. Интересный момент - в 
+районе периода 30 доходности стратегий почти совпадают, потому как 30 - 
+это крайнее значение для КАМА. Рисунок по  доходности стратегии в 
+зависимости от периода будет выложен позже (как редактор сможет). <br>Какой
+ вывод можно сделать? В нижнем диапазоне периодов КАМА смотрится 
+предпочтительнее (правда, всего на "5 копеек", что называется), для 
+верхних диапазонов ее лучше не использовать.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 713, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 713, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20713)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_009.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=154051">Николай Камынин</a> — 9 марта 2012 г.</p>
+												<p class="text">Добрый день,Flyanimal !<br>Да Вы правильно поняли мой комментарий. <br>Дело в том, что когда я исследовал КАМА, то получил, такой же , одинаковый или даже хуже, чем МА, результат. <br>Дело
+ в том, что все трендовые индикаторы, которые применяются или когда-либо
+ применялись для торговли на рынках - это примитивные фильтры нижних 
+частот, с неизвестными , не оптимальными ( а значит плохими) и 
+фактически случайно заданными переходными характеристикам. Ожидать от 
+них чуда не стоит. <br>Единственный фильтр, который показал более 
+интересные результаты, чем все эти примитивы,это как уверяют 
+разработчики - фильтр Кальмана, хотя алгоритмически он представляет 
+собой многополюсный фильтр нижних частот. <br>Опять же  чуда нет,так как это фильтр большого порядка и его характеристики значительно лучше.<br>Поэтому, хорошим завершением Вашей статьи был бы призыв использовать MA и не забивать голову ерундой. <br>Результат будет один и тот же.<br> Если рынок растет будет прибыль, если боковик - будет слив. <br>И хорошо , если боковик будет короткий, иначе сольет все или не заработает ничего на тренде.<br> А на истории достаточно два параметра, что оптимизировать на прибыль трендовый алгоритм с любым индикатором.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 715, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 715, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20715)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_013.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157815">selere1</a> — 11 марта 2012 г.</p>
+												<p class="text">Можете прокомментировать код для VIDYA? У 
+вас в классе VIDYA конструктор public static VIDYA Series (DataSeries 
+ds, int vidyaPer, int vidyaSmooth), а внутри него вы какбы вновь 
+запускаете конструктор? Поясните пожалуйста</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 725, false)" class="button minus">–</a> 1 <a href="#" onclick="return mark_post(266, 725, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20725)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 11 марта 2012 г.</p>
+												<p class="text">selere1, добрый вечер. public static VIDYA 
+Series (DataSeries ds, int vidyaPer, int vidyaSmooth) - это  не 
+конструктор, а метод класса VIDYA. А уже внутри него действительно 
+запускается конструктор VIDYA. Так сделано для того, что бы не 
+приходилось лишний раз создавать объект класса, а просто брать и сразу 
+инициализировать VIDYA, как обычный инструмент WealthLab.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 727, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 727, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20727)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_005.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=135333">umoz</a> — 5 апреля 2012 г.</p>
+												<p class="text">не, я так простые только беру, SMA за глаза хватает</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 846, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 846, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20846)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_004.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157811">foton89</a> — 9 апреля 2012 г.</p>
+												<p class="text">Потестил я данную стратегию, благо код есть.
+ Правда, тестил на часовиках с параметрами, которые рекомендует автор 
+для 15 мин. Как краткое резюме - с пивом потянет))  Но просадки большие 
+получаются, страшно будет с ней по не торговать) . Результаты ниже<br><br>Газпром <br>доходность 34,5%<br>просадка 21% <br>Выигрышные сделки/проигрышные 46%/54%<br><br>Сбербанк<br>доходность 37%<br>просадка 23%<br>Выигрышные сделки/проигрышные 47%/53%<br><br>ГМК Норильский Никель<br>доходность 11,5%<br>просадка 31%<br>Выигрышные сделки/проигрышные 36%/64%</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 857, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 857, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20857)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 12 апреля 2012 г.</p>
+												<p class="text">foton89, дак с пивом как раз не страшно будет)) <br>Для порядку желательно указать, какой интервал брали, проскальзывание и  т д. <br><br>umoz, наверное вы правы, хотя каждый инструмент хорош в нужное время и в нужном месте)</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 863, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 863, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%20863)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_003.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=161780">Laborant</a> — 17 января 2013 г.</p>
+												<p class="text">В боковике развалится, к гадалке не ходи. <br>А то, что между КАМА и ЕМА нет никакой разницы - это давно известно</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1681, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1681, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201681)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-2">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=161616">Veresk</a> — 18 января 2013 г.</p>
+												<p class="text">В боковике многие разваливаются.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1682, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1682, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201682)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 18 января 2013 г.</p>
+												<p class="text">Развалится, а что делать...<br>Волатильность
+ такой робот собирать не умеет. Ну а то что кривая капитала гладкая... 
+ну конечно я ее оптимизировал. Это не секрет.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1694, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1694, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201694)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-2">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_002.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157841">ALendi</a> — 18 января 2013 г.</p>
+												<p class="text">Flyanimal, а есть от такого робота толк? По собственным впечатлениям?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1696, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1696, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201696)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-3">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 18 января 2013 г.</p>
+												<p class="text">ALendi, толк есть всегда от любого дела, даже от безделья))<br>По
+ системе - в текущей фазе рынка она бессильна, это понятно. Поэтому в 
+данный момент она не используется - крутится на виртуальных объемах.  Но
+ ее момент настанет, только чуть позже.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1697, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1697, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201697)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-4">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_002.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157841">ALendi</a> — 18 января 2013 г.</p>
+												<p class="text">Flyanimal, как ты узнаешь, что момент настал?</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1698, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1698, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201698)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-5">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 21 января 2013 г.</p>
+												<p class="text">ALendi, это не формализуемая методология. Есть определенные индикаторы, но в большей степени это личные соображения.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1718, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1718, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201718)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-6">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_002.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157841">ALendi</a> — 21 января 2013 г.</p>
+												<p class="text">Flyanimal, не серьезно все это. Надо брать сберкассу и валить на Кубу.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1719, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1719, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201719)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-7">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_011.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=157281">Flyanimal</a> — 21 января 2013 г.</p>
+												<p class="text">ALendi, да неплохо бы) Думаю все специалисты по взятию сберкасс  уже там))</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(266, 1720, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(266, 1720, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201720)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+							</div>
+							<a name="comments"></a>
+							<div id="b_write_comment">
+								<div class="corner"></div>
+								<h3>Написать комментарий</h3>
+								
+										<p>Чтобы написать комментарий, необходимо <a href="#" data-action="Passport.Logon()">авторизоваться</a>.</p>
+									
+							</div>
+						
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="footmenu" class="clearfix">
+		<ul>
+			<li><a href="http://robostroy.ru/faq/">Как создать торгового робота</a></li>
+			<li><a href="http://robostroy.ru/lab/">Лаборатория</a></li>
+			<li><a href="http://robostroy.ru/community/">Сообщество</a></li>
+			<li><a href="http://robostroy.ru/about/">О проекте</a></li>
+		</ul>
+	</div>
+	<div id="footer">
+		<div id="quik_links" class="clearfix">
+			<dl>
+				<dt>Платформы</dt>
+				<dd><a href="http://robostroy.ru/faq/software/tradematic.aspx">Tradematic</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/quik.aspx">Quik</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/wealthlab.aspx">Wealth-Lab</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/omega.aspx">Omega</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/metastock.aspx">Metastock</a></dd>
+			</dl>
+			<dl>
+				<dt>Создание роботов</dt>
+				<dd><a href="http://robostroy.ru/faq/webinar/">Вебинары</a></dd>
+				<dd><a href="http://robostroy.ru/faq/video/quik.aspx">Видеокурсы</a></dd>
+				<dd><a href="http://robostroy.ru/faq/library/">Библиотека</a></dd>
+				<dd><a href="http://robostroy.ru/robots/">Биржа роботов</a></dd>
+			</dl>
+			<dl>
+				<dt>Сообщество</dt>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=strategies">Стратегии</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=robots">Роботы</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=theory">Теория</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=technologies">Технологии</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=news">Новости</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=analytics">Торговые рекомендации</a></dd>
+			</dl>
+			
+			<div class="partners">
+				<h3>Партнеры проекта</h3>
+				<p>
+					<a href="http://broker.ru/brokerage"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/fgbcs_logo.gif" alt="" width="122" height="44"></a>
+				</p>
+			</div>
+		</div>
+		<div id="copyright">
+			<div class="logo">
+				<a href="http://robostroy.ru/"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy_inv.png" alt="Робострой"></a>
+			</div>
+			<div class="robohand">
+				<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robohand.png" alt="">
+			</div>
+			<div class="disclaimer">
+				<p>2011 — 2014 © robostroy.ru</p>
+				<p><a href="http://robostroy.ru/agreement/">Пользовательское соглашение</a></p>
+				<br>
+				
+	<script id="top100Counter" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/top100.gif"></script>
+
+			</div>
+			<div class="support">
+				<p><a href="#feedbackForm" id="feedbackFormLink">Написать администратору</a></p>
+			</div>
+			<div class="designer">
+				<p>Дизайн сайта — <!--noindex--><a href="http://www.openproject.ru/" target="_blank" rel="nofollow"><i class="xq"></i></a><!--/noindex--></p>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="common-hidden">
+	<form id="feedbackForm" action="/feedfack.ashx" method="post">
+		<input name="ValidationToken" id="ValidationToken" value="alsertjghljfsmzgj.lhgjnlvz;jntg" type="hidden">
+		<input name="mytoken" id="mytoken" value="" type="hidden">
+
+		<div class="fancybox-title-inside-top">
+			<h3>Написать администратору</h3>
+		</div>
+		<input name="action" value="send" type="hidden">
+		<div class="content">
+			<div class="label">
+				<label>Имя:</label>
+				<span id="feedbackFormUserNameError" class="invalid"></span>
+			</div>
+			<div class="username">
+				<input id="feedbackFormUserName" name="username">
+			</div>
+			<div class="label">
+				<label>E-mail:</label>
+				<span id="feedbackFormUserMailError" class="invalid"></span>
+			</div>
+			<div class="usermail">
+				<input id="feedbackFormUserMail" name="usermail">
+			</div>
+			<div class="label">
+				<label>Сообщение:</label>
+				<span id="feedbackFormMessageError" class="invalid"></span>
+			</div>
+			<div class="textbox">
+				<textarea id="feedbackFormMessage" name="message" cols="60" rows="10"></textarea>
+			</div>
+			<div class="submit">
+				<input value="Отправить" type="submit">
+			</div>
+		</div>
+	</form>
+</div>
+<div class="seo_counters">
+	
+	<script>document.write("<a href='http://www.liveinternet.ru/click' target=_blank><img src='//counter.yadro.ru/hit?t14.6;r" + escape(document.referrer) + ((typeof (screen) == "undefined") ? "" : ";s" + screen.width + "*" + screen.height + "*" + (screen.colorDepth ? screen.colorDepth : screen.pixelDepth)) + ";u" + escape(document.URL) + ";h" + escape(document.title.substring(0, 80)) + ";" + Math.random() + "' border=0 width=1 height=1 alt='' title=''><\/a>")</script><a href="http://www.liveinternet.ru/click" target="_blank"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/hit.gif" alt="" title="" border="0" width="1" height="1"></a>
+	<script>document.write("<a href='http://www.liveinternet.ru/click;BrokerCreditService' target=_blank><img src='//counter.yadro.ru/hit;BrokerCreditService?t14.6;r" + escape(document.referrer) + ((typeof (screen) == "undefined") ? "" : ";s" + screen.width + "*" + screen.height + "*" + (screen.colorDepth ? screen.colorDepth : screen.pixelDepth)) + ";u" + escape(document.URL) + ";h" + escape(document.title.substring(0, 80)) + ";" + Math.random() + "' border=0 width=1 height=1 alt='' title=''><\/a>")</script><a href="http://www.liveinternet.ru/click;BrokerCreditService" target="_blank"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%9A%D0%B0%D0%BA%20%E2%80%9C%D0%BE%D0%B6%D0%B8%D0%B2%D0%B8%D1%82%D1%8C%E2%80%9D%20%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%B7%D1%8F%D1%89%D1%83%D1%8E%20%D1%81%D1%80%D0%B5%D0%B4%D0%BD%D1%8E%D1%8E%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/hit_002.gif" alt="" title="" border="0" width="1" height="1"></a>
+	<script>
+		(function () {
+			var g = document.createElement('script'),
+				s = document.getElementsByTagName('script')[0];
+			g.type = 'text/javascript';
+			g.async = true;
+			g.src = 'http' + ('https:' == document.location.protocol ? 's://' : '://') + 'stats.g.doubleclick.net/dc.js';
+			s.parentNode.insertBefore(g, s);
+		})();
+	</script>
+
+	<!-- Piwik -->
+	<script>
+		var _paq = _paq || [];
+		_paq.push(['trackPageView']);
+		_paq.push(['enableLinkTracking']);
+		(function () {
+			var u = '//stat.bcs.ru/p/';
+			_paq.push(['setTrackerUrl', u + 'piwik.php']);
+			_paq.push(['setSiteId', 4]);
+			var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+			g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s);
+		})();
+	</script>
+	<noscript><p><img src='//stat.bcs.ru/p/piwik.php?idsite=4' style='border: 0;' alt='' /></p></noscript>
+<!-- End Piwik Code -->
+
+
+</div>
+
+<div id="fancybox-tmp"></div><div id="fancybox-loading"><div></div></div><div id="fancybox-overlay"></div><div id="fancybox-wrap"><div id="fancybox-outer"><div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div><div id="fancybox-content"></div><a id="fancybox-close"></a><div id="fancybox-title"></div><a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a><a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a></div></div></body></html>

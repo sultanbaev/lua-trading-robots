@@ -1,0 +1,264 @@
+/*
+
+Стратегия на основе уровней, раcсчитанных по вчерашней динамике
+
+Расчет уровней:
+Берем половину динамики изменения цены за предыдущий день - delta = (H-L)/2
+тогда текущие уровни:
+resist = open + delta
+support = open - delta
+
+Стратегия:
+1. Лонг
+	1.1 По Тренду - если цена пробивает уровень resist
+	1.2 Против Тренда - если цена пробивает уровень resist и возвращается обратно, пересекая его
+2. Шорт
+	1.1 По Тренду - если цена пробивает уровень support
+	1.2 Против Тренда - если цена пробивает уровень support и возвращается обратно, пересекая его
+
+
+Управление позицией:
+торговля только внутри дня с 11.00 до 19.00, без переноса позиций через день
+
+
+Управление рисками:
+Стоп-лосс расчитывается как минимальное значение из следующих значений
+- 25% от вчерашнего изменения динамики цены
+- риск на сделку 3%
+
+т.е.
+	loss1 = 25% * (resistLevel - supportLevel) / 100%
+	loss2 = 3% * enterPrice / 100%
+loss = Min(loss1, loss2)
+
+
+Author: Milovanov Maxim
+http://isynapse.ru/
+
+*/
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Drawing;
+using WealthLab;
+using WealthLab.Indicators;
+
+namespace WealthLab.Strategies
+{
+	public class MyStrategy : WealthScript
+	{
+
+		StrategyParameter countDealsPerDayParam;
+		StrategyParameter stopLossPercentLastDayParam;
+		StrategyParameter stopLossPercentDealParam;
+
+
+		public MyStrategy() {
+			countDealsPerDayParam = CreateParameter("Count deals per day", 2, 1, 10, 1);	//Количество сделок в день
+			stopLossPercentLastDayParam = CreateParameter("stopLossPercentLastDayParam", 25, 1, 100, 1);	//Стоп лосс в процентах от вчерашней динамики цены	(H-L)/2
+			stopLossPercentDealParam = CreateParameter("stopLossPercentDealParam", 3, 1, 100, 1);	//Стоп лосс в процентах на сделку
+		}
+
+		
+		
+		protected override void Execute()
+		{
+			int countDealsPerDay = countDealsPerDayParam.ValueInt;
+			double stopLossPercentDay = stopLossPercentLastDayParam.ValueInt;
+			double stopLossPercentDeal = stopLossPercentDealParam.ValueInt;
+
+			//Данные для расчета уровней
+			SetScaleDaily();
+			DataSeries highSeries = Bars.High;
+			DataSeries lowSeries = Bars.Low;
+			RestoreScale();
+			highSeries = Synchronize(highSeries);
+			lowSeries = Synchronize(lowSeries);
+			
+
+			//Очистить Дебаг
+			ClearDebug();
+			
+			//нгарисовать стопы
+			PlotStops();
+			
+			
+			//Уровни
+			double resist = 0;
+			double support = 0;
+
+		
+			double stop = 0;		//Стоп-лосс
+			int countDeals = 0;		//Кол-во сделок
+			string dealType = "";	//Тип сделки
+			
+			//Пересекала ли цена уровни			
+			bool crossSupport = false;
+			bool crossResist = false;
+			
+			
+			for(int bar = 20; bar < Bars.Count; bar++)
+			{
+
+				//New day
+				if (Date[bar].Day != Date[bar-1].Day) {
+					
+					countDeals = 0;
+					
+					double delta = (highSeries[bar] - lowSeries[bar]) / 2;
+					
+					int endDayBar = bar;
+					for (int i=bar; i<Bars.Count; i++)
+					{
+						if (Date[bar].Day != Date[i].Day)
+						{
+							endDayBar = i;
+							break;
+						}
+					}
+
+				
+					//Уровни от закрытия вчерашнего дня
+					resist = Close[bar-1] + delta;
+					support = Close[bar-1] - delta;
+					
+					
+					DrawLine(PricePane, bar, resist, endDayBar, resist, Color.Red, LineStyle.Solid, 2);
+					DrawLine(PricePane, bar, support, endDayBar, support, Color.Green, LineStyle.Solid, 2);
+					
+					crossSupport = false;
+					crossResist = false;
+					
+				}
+				
+
+				
+
+				//Пересекала ли цена наши уровни
+				if ( Close[bar] < support ) crossSupport = true;
+				if ( Close[bar] > resist ) crossResist = true;
+				
+				
+				//PrintDebug(resist + " " + support);
+				
+				
+				//Если позиция активна
+				if (IsLastPositionActive) {
+					Position p = LastPosition;
+
+					if (p.PositionType == PositionType.Long) {
+						SellAtStop(bar, p, stop);
+
+						if (IsLastPositionActive && Date[bar].Hour == 23 && Date[bar].Minute == 30) {
+							SellAtMarket(bar+1, p);
+						}
+
+						if (!IsLastPositionActive) crossSupport = false;
+						
+					} else if (p.PositionType == PositionType.Short) {
+						CoverAtStop(bar, p, stop);
+
+						if (IsLastPositionActive && Date[bar].Hour == 23 && Date[bar].Minute == 30) {
+							CoverAtMarket(bar+1, p);
+						}
+
+						if (!IsLastPositionActive) crossResist = false;
+						
+					}
+					
+					
+				} else {
+					
+
+					if ( Date[bar].Hour >= 11 && Date[bar].Hour <= 19 ) {	//Сделка только в определенное время
+						if (
+							countDeals < countDealsPerDay &&	//количество сделок меньше допустимого
+							support != 0 && resist != 0			//Уровни посчитаны
+						) {
+							
+
+							double loss1 = stopLossPercentDay * (resist-support) / 100;		//25% - четверть от уровней
+							double loss2 = Close[bar]/100*stopLossPercentDeal;				//3% лось от уровня закрытия
+							double loss = Math.Min(loss1, loss2);
+							
+							
+							//Long by trend
+							if (
+								!IsLastPositionActive &&
+								Close[bar] > resist
+								)
+							{
+								PrintDebug(loss1 + " " + loss2);
+
+								
+								dealType = "LongByTrend";
+								BuyAtMarket(bar+1, "BuyTrend");
+								stop = Close[bar] - loss;
+								countDeals++;
+							}
+						
+
+							//Long contr trend
+							/*
+							if (
+								!IsLastPositionActive &&
+								crossSupport &&
+								( Close[bar] > support )
+								//&& Date[bar].Hour == 11 && Date[bar].Minute == 00
+								)
+							{
+								dealType = "LongContrTrend";
+								BuyAtMarket(bar+1, "BuyContrTrend");
+								stop = Close[bar] - loss;
+								countDeals++;
+							}
+							*/
+						
+						
+						
+							//Short by trend
+							if (
+								!IsLastPositionActive &&
+								Close[bar] < support
+								)
+							{
+								dealType = "ShortByTrend";
+								ShortAtMarket(bar+1, "SellTrend");
+								stop = Close[bar] + loss;
+								countDeals++;
+							}
+
+						
+							//Short contr trend
+							/*
+							if (
+								!IsLastPositionActive &&
+								crossResist &&
+								( resist > Close[bar] )
+								//&& Date[bar].Hour == 11 && Date[bar].Minute == 00
+								)
+							{
+								dealType = "ShortContrTrend";
+								ShortAtMarket(bar+1, "SellContrTrends");
+								stop = Close[bar] + loss;
+								countDeals++;
+							}
+							*/
+							
+						}
+					}
+
+					
+				}
+				
+			}
+			
+			
+			
+
+			
+		}
+		
+		
+	}
+}

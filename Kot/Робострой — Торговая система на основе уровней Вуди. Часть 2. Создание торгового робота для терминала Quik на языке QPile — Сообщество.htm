@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>Робострой — Торговая система на основе уровней Вуди. Часть 2. 
+Создание торгового робота для терминала Quik на языке QPile — Сообщество</title>
+	<meta name="title" content="Робострой — Торговая система на основе уровней Вуди. Часть 2. Создание торгового робота для терминала Quik на языке QPile — Сообщество"><meta name="google-site-verification" content="trCz4sxH92uoDT1LDcO76U3lftTV-_CRmLQ2kSu9H0w">
+	<meta name="yandex-verification" content="58c4dd8634c285ee">
+	<link rel="stylesheet" href="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/common.css">
+	
+	<!--[if lte IE 6]><link rel="stylesheet" href="/static/css/ie6.min.css?20140604">
+	<![endif]-->
+	<!--[if lte IE 7]><link rel="stylesheet" href="/static/css/ie7.min.css?20140604">
+	<![endif]-->
+	<link rel="shortcut icon" href="http://robostroy.ru/favicon.ico">
+	<link rel="alternate" type="application/rss+xml" title="Заметки Робострой" href="http://robostroy.ru/rss.ashx">
+	
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/piwik.js" defer="defer" async="" type="text/javascript"></script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/dc.gif" async="" type="text/javascript"></script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_002.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_004.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jcarousellite.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/jquery_003.js"></script>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/swfobject.js"></script>
+<script>Passport = { Settings: { Agent: 'http://robostroy.ru/agent.ashx', Agent64: 'aHR0cDovL3JvYm9zdHJveS5ydS9hZ2VudC5hc2h4', Area: 'robostroy', Root: 'https://passport.bcs.ru/', Url64: 'aHR0cDovL3JvYm9zdHJveS5ydS9jb21tdW5pdHkvYXJ0aWNsZS5hc3B4P2lkPTQyNA==' }, Profile: { Id: 192610, EMail: 'dr_ks@mail.ru', Surname: null, Name: 'Константин', MiddleName: null, Birthdate: null, Client: false } };</script><script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy.js"></script><style media="screen" type="text/css">#flash-banner {visibility:hidden}</style></head>
+<body>
+<div id="body">
+	
+	<div id="header">
+		<div class="logo">
+			<a href="http://robostroy.ru/"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy.png" alt="Робострой"></a>
+		</div>
+		<div id="linki" class="clearfix">
+			<ul class="about clearfix">
+				<li><a href="http://robostroy.ru/about/">О проекте</a></li>
+			</ul>
+			<ul class="social clearfix">
+				<li><!--noindex--><a rel="nofollow" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d424"><i class="facebook"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://twitter.com/share?text=%d0%a0%d0%be%d0%b1%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b9&amp;url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d424"><i class="twitter"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://vkontakte.ru/share.php?url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d424"><i class="vk"></i></a><!--/noindex--></li>
+				<li><!--noindex--><a rel="nofollow" href="http://connect.mail.ru/share?url=http%3a%2f%2frobostroy.ru%2fcommunity%2farticle.aspx%3fid%3d424&amp;title=%d0%a0%d0%be%d0%b1%d0%be%d1%81%d1%82%d1%80%d0%be%d0%b9&amp;imageurl=http%3a%2f%2frobostroy.ru%2fimg%2frobostroy.png"><i class="moimir"></i></a><!--/noindex--></li>
+			</ul>
+			<ul class="passport clearfix">
+				<li><a class="enter" href="http://robostroy.ru/community/profile/"><i class="user"></i>dr_ks</a></li>
+				
+				<li><div class="vline"></div></li>
+				<li><a class="signup" href="https://passport.bcs.ru/ls/logout.ashx?return=aHR0cDovL3JvYm9zdHJveS5ydS9jb21tdW5pdHkvYXJ0aWNsZS5hc3B4P2lkPTQyNA==&amp;agent=aHR0cDovL3JvYm9zdHJveS5ydS9hZ2VudC5hc2h4">Выход</a></li>
+			</ul>
+		</div>
+		<div id="menubar">
+			<ul id="mainmenu" class="clearfix">
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/faq/" class="ia"><i class="robot"></i>Как создать<br>торгового робота<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/faq/webinar/">Вебинары</a></li>
+							<li><a href="http://robostroy.ru/faq/video/">Видеокурсы</a></li>
+							<li><a href="http://robostroy.ru/faq/library/">Библиотека</a></li>
+							<li><a href="http://robostroy.ru/faq/software/">Программы для разработки торговых роботов</a></li>
+							<li class="last"><a href="http://robostroy.ru/faq/drives/">Приводы</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/lab/" class="ia"><i class="lab"></i>Лаборатория<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/lab/mai.aspx">Пересечение скользящих средних</a></li>
+							<li><a href="http://robostroy.ru/lab/mawf.aspx">Скользящая средняя с фильтрацией</a></li>
+							<li class="last"><a href="http://robostroy.ru/lab/hi-low.aspx">Торговая стратегия на пробитие hi-low</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/community/" class="ia"><i class="people"></i>Сообщество<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=strategies">Стратегии</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=robots">Роботы</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=theory">Теория</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=technologies">Технологии</a></li>
+							<li><a href="http://robostroy.ru/community/default.aspx?cid=news">Новости</a></li>
+							<li class="last"><a href="http://robostroy.ru/community/default.aspx?cid=analytics">Торговые рекомендации</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/robots/" class="ia"><i class="dev"></i>Биржа роботов<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/robots/">Биржа роботов</a></li>
+							<li><a href="http://robostroy.ru/robots/monthly.aspx">Роботы</a></li>
+							<li><a href="http://robostroy.ru/robots/dev.aspx">Разработка роботов</a></li>
+							<li><a href="http://robostroy.ru/robots/audit.aspx">Аудит торговых систем</a></li>
+							<li class="last"><a href="http://robostroy.ru/robots/positions.aspx">Позиции торговых систем</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="i">
+					<!--[if lte IE 7]><table><tr><td><![endif]-->
+					<a href="http://robostroy.ru/community/profile/" class="ia"><i class="profile"></i>Мой профиль<i class="arr"></i></a>
+					<!--[if lte IE 7]></td></tr></table><![endif]-->
+					<div class="pulldown">
+						<ul>
+							<li><a href="http://robostroy.ru/community/profile/friends.aspx">Мои коллеги</a></li>
+							<li><a href="http://robostroy.ru/community/blog/">Мои заметки</a></li>
+							<li class="last"><a href="http://robostroy.ru/community/profile/messages.aspx">Мои сообщения</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+			<div id="b_menubar_searchform">
+				<form action="/search/" method="get">
+					<table>
+						<tbody><tr>
+							<td>
+								<input class="ysearch-text ysearch-text-logo" name="text">
+							</td>
+						</tr>
+					</tbody></table>
+					<input class="submit" value="" type="submit">
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="top-banner">
+		<object style="visibility: visible;" id="flash-banner" data="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/promo_01.swf" type="application/x-shockwave-flash" width="100%" height="55"><param value="opaque" name="wmode"></object>
+	</div>
+	
+	
+
+<div id="navigation">
+	<a href="http://robostroy.ru/">Главная</a>&nbsp;&nbsp;→&nbsp;&nbsp;<a href="http://robostroy.ru/community/">Сообщество</a>&nbsp;&nbsp;→&nbsp;&nbsp;<a href="http://robostroy.ru/community/article.aspx?id=424">Торговая система на основе уровней Вуди. Часть 2. Создание торгового робота для терминала Quik на языке QPile</a>
+</div>
+	<div id="wrapper" class="clearfix">
+		<div id="right">
+			<div class="shadow-box">
+				
+
+<div id="b_personal_card">
+	
+			<style>
+				iframe { display: none }
+				#avatar_upload_wnd { position: absolute; border: 1px solid #dcdcdc; padding: 1em; background-color: #fff; font: 11px Tahoma; z-index: 1001; display: none }
+				#avatar_upload_wnd input { width: 30em; border: 2px solid #dcdcdc; margin: 10px 0; padding: 3px; font: 10px Tahoma }
+				#avatar_upload_wnd i { position: absolute; top: 1em; right: 1em; width: 16px; height: 16px; background-position: left center; background-repeat: no-repeat; background-image: url(/static/img/icons/delete.gif); cursor: pointer }
+				#avatar_upload_wnd div { text-align: right }
+				#avatar_upload_wnd small { color: #666 }
+			</style>
+			<iframe src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/a.htm" name="process" id="process"></iframe>
+			<div id="avatar_upload_wnd">
+				<i></i>
+				<b>Выберите&nbsp;изображение</b><br>
+				<small>доступные&nbsp;форматы:&nbsp;PNG,&nbsp;GIF,&nbsp;JPEG</small>
+				<form method="post" action="/community/profile/profile.ashx" target="process" enctype="multipart/form-data">
+					<input name="action" value="profile.avatar.upload" type="hidden">
+					<input name="itoken" id="itoken2" value="" type="hidden">
+					<input id="file" name="avatarfile" title="Выбрать файл" type="file">
+				</form>
+				<div>
+					<button name="avatar.upload" title="Загрузить аватар">Загрузить аватар</button>
+				</div>
+			</div>
+			<script>
+			function UploadAvatar() {
+				$('#avatar_upload_wnd')
+					.show()
+					.find('button')
+						.click(function () {
+							if (!confirm('Загрузить новый аватар?')) return;
+							$('#avatar_upload_wnd').hide();
+							$('#process').load(function () {
+								var json = $('#process').contents().text();
+								if (json == 'ok') {
+									alert('Аватар успешно загружен!');
+									$('.b-image img').attr('src', Passport.Settings.Root + 'profile/avatar.ashx?id=' + Passport.Profile.Id);
+								} else {
+									alert(json);
+								}
+							});
+							$('#itoken2').val($('#itoken').val());
+							$('#avatar_upload_wnd form').submit();
+						});
+			}
+			</script>
+			<div class="b-head">
+				<div class="folder"></div>
+				<div class="b-image">
+					<img id="ctl00_ContentPlaceHolder1_PersonalCard_Avatar" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_007.ashx">
+				</div>
+				<div class="b-desc">
+					<p class="nickname"><a id="ctl00_ContentPlaceHolder1_PersonalCard_linkLogin" href="http://robostroy.ru/community/profile/default.aspx?id=158468">Максим Милованов</a></p>
+					<div class="b-desc-options">
+						
+						
+						
+						<p id="ctl00_ContentPlaceHolder1_PersonalCard_optAddFriend" class="friend">
+							<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkAddFriend" target="158468" href="http://robostroy.ru/Controls/#friend.add"><i></i>Добавить в коллеги</a>
+						</p>
+						<p id="ctl00_ContentPlaceHolder1_PersonalCard_optWriteMessage" class="write">
+							<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkWriteMessage" target="Максим Милованов" href="http://robostroy.ru/Controls/#message.new"><i></i>Написать сообщение</a>
+						</p>
+					</div>
+				</div>
+			</div>
+			<ul class="b-options">
+				
+				
+				
+				
+				
+				
+				
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optProfile">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkProfile" href="http://robostroy.ru/community/profile/default.aspx?id=158468"><i class="profile"></i>Профиль</a>
+				</li>
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optAssosiates">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkAssosiates" href="http://robostroy.ru/community/profile/friends.aspx?id=158468"><i class="associates"></i>Коллеги</a>
+				</li>
+				<li id="ctl00_ContentPlaceHolder1_PersonalCard_optBlog">
+					<a id="ctl00_ContentPlaceHolder1_PersonalCard_linkBlog" href="http://robostroy.ru/community/blog/Default.aspx?id=158468"><i class="blog"></i>Заметки</a>
+				</li>
+				
+			</ul>
+		
+</div>
+			</div>
+			<div class="shadow-box">
+				
+
+<div id="popular-ideas">
+	<h3>Популярные записи</h3>
+	
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=683">Пишем торгового робота на C#. Часть 1. Основы языка программирования и связь с терминалом</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=158468">Максим Милованов</a></p>
+					<p class="idea-comments"><i></i>56</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=765">Робот RSI с трейлинг-стопом на QLua</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>48</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=266">Как “оживить” скользящую среднюю</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157281">Flyanimal</a></p>
+					<p class="idea-comments"><i></i>42</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=339">Торговая система на основе пробоя ценового канала</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>36</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=453">Стратегия "спот-фьючерс" на примере торговли индексом в Tradematic Trader</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=158575">tradematic</a></p>
+					<p class="idea-comments"><i></i>35</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=560">Робот на простом паттерне</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>34</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=783">Qlua для чайников. Часть 4. Анализ информации из стакана и работа с заявками</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>34</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=788">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=154003">megabax</a></p>
+					<p class="idea-comments"><i></i>33</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=425">Стратегия "Вход относительно открытия свечей старших таймфреймов"</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=157841">ALendi</a></p>
+					<p class="idea-comments"><i></i>32</p>
+				</div>
+			</div>
+		
+			<div class="common-hr"><hr></div>
+		
+			<div class="idea">
+				<p class="title"><a href="http://robostroy.ru/community/article.aspx?id=283">Система управления портфелем акций на основе принципов парного трейдинга</a></p>
+				<div class="idea-properties">
+					<p class="idea-author"><i></i><a href="http://robostroy.ru/community/profile/?id=135333">umoz</a></p>
+					<p class="idea-comments"><i></i>28</p>
+				</div>
+			</div>
+		
+</div>
+				
+		<div id="b_last_comments">
+			<div class="header">
+				<h3>Последние комментарии</h3>
+			</div>
+			
+					<div class="b-comment">
+						<p class="text">... Дело в том, что tb.bid_count представляет собой не целое число, а дробное, хотя и округленного до целого ...
+
+Параметр Тип Описание 
+bid_count STRING Количество котировок покупки</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192366" class="sign"><i></i>ardeo</a> → <a href="http://robostroy.ru/community/article.aspx?id=783" class="article">Qlua для чайников. Часть 4. Анализ информации из стакана и работа с заявками</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">function OnQuote(class_code, sec_code)
+	if class_code == p_class and sec_code==p_sec then
+		QL2=getQuoteLevel2(class_code, sec_code)
+		local i=tonumber(QL2.bid_count)
+		out_txt="BID: "..QL2.bid[i].price.."  "..QL2.bid[i].quantity..
+			"\nOFFER: "..QL...</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192366" class="sign"><i></i>ardeo</a> → <a href="http://robostroy.ru/community/article.aspx?id=778" class="article">Qlua для чайников. Часть 3. Работа со стаканом</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">Огромное спасибо за статью. Гениально и просто. а с 2011 года усовершенствовали метод ?</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=192133" class="sign"><i></i>Zefir01</a> → <a href="http://robostroy.ru/community/article.aspx?id=228" class="article">Стратегия на свечных паттернах</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">забавно! скопировал код в новый файл с название _1 и заработало =) прям жуть!</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=191336" class="sign"><i></i>Lomonosov</a> → <a href="http://robostroy.ru/community/article.aspx?id=788" class="article">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+					</div>
+				
+					<div class="common-hr"><hr></div>
+				
+					<div class="b-comment">
+						<p class="text">перестал работать скрипт с 1 части. Пишет ошибку 
+Syntax error while compiling "путь скрипта латиницей: путь скрипта 
+латиницей":1: unexpected symbol near 'п'. Удалял, писал заново - всё 
+одно и то же.</p>
+						<p class="desc"><a href="http://robostroy.ru/community/profile/?id=191336" class="sign"><i></i>Lomonosov</a> → <a href="http://robostroy.ru/community/article.aspx?id=788" class="article">Qlua для чайников. Часть 5. Работа с таблица Quik. Поиск заявок. Искусство отладки</a></p>
+					</div>
+				
+		</div>
+	
+			</div>
+		</div>
+		<div id="left">
+			<div class="shadow-box">
+				<div class="shadow-box-wrapper">
+					<div class="shadow-box-header">
+						<h3><span>Заметка</span></h3>
+					</div>
+					
+							<div id="b_article">
+								
+										
+										<div class="b-article-header">
+											<p class="title">Торговая система на основе уровней Вуди. Часть 2. Создание торгового робота для терминала Quik на языке QPile</p>
+											<div class="b-properties">
+												<ul class="properties">
+													<li class="sign"><i></i><a href="http://robostroy.ru/community/profile/default.aspx?id=158468">Максим Милованов</a></li>
+													<li class="label"><i></i><a href="http://robostroy.ru/community/default.aspx?cid=robots">Роботы</a>, <a href="http://robostroy.ru/community/soft.aspx?cid=quik">quik</a></li>
+													<li class="time">21 августа 2012 г.</li>
+												</ul>
+											</div>
+											<div class="vote">
+												<div class="r">
+													<a href="#" onclick="return mark_post(424, null, false)" class="button minus">&nbsp;</a> 6 <a href="#" onclick="return mark_post(424, null, true)" class="button plus">&nbsp;</a>
+												</div>
+											</div>
+											<div class="abuse">
+												<a href="javascript:ComplaintAdd(2,%20424)">Сигнал модератору</a>
+											</div>
+										</div>
+										<div class="b-article-body">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_007.ashx" alt="">
+											</div>
+											<p>В предыдущей статье мы протестировали торговую систему на 
+основе уровней Вуди. Она оказалась прибыльной. Теперь перед нами задача в
+ программировании торгового робота по правилам торговой системы. За 
+основу написания робота возьмем встроенный язык в терминал Quik – Qpile.</p>
+											<p><!--noindex--><a href="http://robostroy.ru/community/article.aspx?id=419" rel="nofollow">В прошлой статье</a><!--/noindex-->
+ мы протестировали торговую систему на основе уровней Вуди. Она 
+оказалась прибыльной. Теперь перед нами задача в программировании 
+торгового робота по правилам торговой системы.</p>
+<p>За основу возьмем встроенный язык в терминал Quik – Qpile. Плюсами 
+данного языка, является простота, хорошая техподдержка со стороны 
+разработчиков, минусы у данного языка тоже присутствуют, главным образом
+ это ограниченный функционал.</p>
+<p>Определим минимальный набор функций, которые должен уметь наш робот:</p>
+<ol>
+<li>Открывать позицию по определенным правилам и в определенное время</li>
+<li>Управлять позицией и стоп-лосом</li>
+<li>Соблюдать ограничение на количество сделок в день и время торговли</li>
+</ol>
+<p>Теперь опишем алгоритм работы робота с учетом специфики языка Qpile (Рис 1).</p>
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=949" target="_blank" rel="nofollow"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image.jpeg" alt="" data-width="771" width="580" height="780"></a><!--/noindex--></p>
+<p>Рис 1. Алгоритм робота</p>
+
+<p>Теперь, когда алгоритм описан, остается его запрограммировать.</p>
+<p>Робот на Qpile создается с помощью портфеля.</p>
+<p>Для этого создадим файл robot_vudi.qpl – в этом файле будет храниться
+ код нашего робота. Также для нашего робота потребуется файл, в котором 
+мы будем хранить информацию и совершенных количестве сделок. Сохраним 
+его в папке C:\temp\ под именем robot_vudi_data.txt.</p>
+<p>Чтобы загрузить робота в Quik достаточно выполнить команды Таблицы – 
+Портфели – Задать портфель (Рис 2) и нажать кнопку «Загрузить локально» 
+(Рис 3).</p>
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=950" target="_blank" rel="nofollow"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image_004.ashx" alt="" data-width="772" width="580" height="348"></a><!--/noindex--></p>
+<p>Рис 2. Загрузка робота в Quik</p>
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=951" target="_blank" rel="nofollow"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image_003.ashx" alt="" data-width="612" width="580" height="594"></a><!--/noindex--></p>
+<p>Рис 3. Загрузка файла робота в Quik</p>
+
+<p>Таким образом, мы загрузили робота в Quik. Теперь надо заставить его 
+работать. Для этого необходимо выполнить команду Таблицы – Портфели – 
+Просмотр портфеля (Рис 4), выбрать портфель и нажать кнопку «Добавить 
+все».</p>
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=953" target="_blank" rel="nofollow"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image.ashx" alt="" data-width="596" width="580" height="519"></a><!--/noindex--></p>
+<p>Рис 4. Выбор портфеля</p>
+
+
+<p>В результате на экране должно появиться окно с таблицей (Рис 5).</p>
+
+<p><!--noindex--><a class="post-image" href="http://robostroy.ru/community/blog/image.ashx?id=954" target="_blank" rel="nofollow"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/image_002.ashx" alt="" data-width="962" width="580" height="429"></a><!--/noindex--></p>
+<p>Рис 5. Внешний вид робота в Quik</p>
+
+
+<p>Рассмотрим основные настройки робота. Если открыть файл робота в 
+любом текстовом редакторе, то мы увидим код робота. Рассмотрим 
+настроечные параметры робота:</p>
+
+<pre>canTrade = 1                          'Разрешено ли совершать сделки, 0 = запрещено, 1 = разрешено
+
+clientAccount = "SPBFUT00000"         'Номер счета клиента
+
+clientCode = "SPBFUT00000"            'Код счета клиента
+
+secClass = "SPBFUT"                   'Класс инструмента
+
+secCode = "RIU2"                      'Код инструмента
+
+timeFrame = 15                        'ТаймФрейм
+
+shareCount = 1                        'Количество контрактов для сделки
+
+dealsCountPerDay = 2                  'Максимально количество сделок за день
+
+slippage = 200                        'Проскальзывание
+
+stopLoss = 800                        'Стоп-лосс — максимальная просадка от текущей позиции
+
+minStepPrice = 5                      'Минимальный шаг цены торгуемого инструмента (для фьючерса РТС = 5 пунктов)
+
+filePath = "C:\temp\robot_vudi_data.txt"        'Файл для хранения информации о количестве сделанных за день сделок
+
+candlesWatchCount = 500               'Количество просматриваемых свечей назад от текущего времени, для определения High, Low, Close предыдущего дня (необходимо просмотреть все свечи предыдущего дня или больше)
+
+isDebug = 1                           'Использовать ли режим отладки, 0 — нет, 1 — да
+</pre>
+
+
+<p>Главным образом нас заинтересуют переменные clientAccount, 
+clientCode, которые обозначают номер счета и код счета клиента 
+соответственно. Без них робот торговать не будет. Также при желании 
+можно настроить размер стоп-лосса.</p>
+<p>Для тестирования робота Вы также можете включить режим отладки и 
+запустить на тестовом счете. Режим отладки заключается в установки своих
+ значений уровня сопротивления, поддержки. Для включения режима отладки 
+требуется установить значение переменной isDebug равным единице, тогда 
+станут доступны переменные для отладки:</p>
+<pre>debugResistLevel = 139100
+
+debugSupportLevel = 139000
+
+debugStopLoss = 100</pre>
+
+
+<p>В заключении хотелось бы отметить, что данный робот является примером
+ создания робота на языке Qpile. Для реальной торговли, данный робот 
+может использоваться только после тестирования на демо счете и 
+исправления выявленных ошибок. Автор данной статьи не несет 
+ответственности за ваш торговый счет при использовании данного робота.</p>
+<p>В следующей статье мы попытаемся реализовать алгоритм данного робота с помощью библиотеки для создания торговых роботов Stock#.</p>
+<p><strong>Код робота прикрепленным файлом&nbsp;</strong></p>
+											
+													<fieldset>
+														<legend>Прикрепленные файлы</legend>
+												
+													<p>
+														<b>·</b> &nbsp; <a href="javascript:Community.API.Post.Attachment.Open(40)" onclick="_gaq.push(['_trackEvent', 'Скачивания', 'Сообщество', 'Вуди для Quik.rar']); return true;" title="Открыть файл">Вуди для Quik.rar</a>
+													</p>
+												
+													</fieldset>
+												
+										</div>
+									
+								
+	<div class="b-social">
+		<div class="nets">
+			<div class="facebook"></div>
+			<div class="vk"><span>0</span></div>
+			<div class="twitter"><span>0</span></div>
+			<div class="odnoklassniki"><span>0</span></div>
+		</div>
+		<div class="print">
+			<a href="javascript:window.print();" title="Распечатать страницу"><i></i>Распечатать</a>
+		</div>
+	</div>
+	<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/social.js"></script>
+
+								<script src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/article.js"></script>
+							</div>
+							<div class="shadow-box-header-lgray">
+								<h3><a name="comments"></a><span>Комментарии</span></h3>
+							</div>
+							<div id="b_comments">
+								
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_004.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=160030">andry194</a> — 22 августа 2012 г.</p>
+												<p class="text">как скачать файл<br>телефон не вводится</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1302, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1302, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1302">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201302)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_003.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=155138">OmegaJN</a> — 23 августа 2012 г.</p>
+												<p class="text">Вводите номер сотового без 8.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1303, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1303, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1303">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201303)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=160037">dynai@</a> — 23 августа 2012 г.</p>
+												<p class="text">Телефон не вводиться???    непонятно???   что делать??</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1304, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1304, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1304">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201304)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_002.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=160027">svklam</a> — 23 августа 2012 г.</p>
+												<p class="text">в InternetExplorer вводится, в Mozila можно скопировать и вставить (правым кликом)  из другого места.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1306, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1306, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1306">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201306)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_006.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=131637">Ларин Александр</a> — 24 августа 2012 г.</p>
+												<p class="text">Проблема с вводом для Mozilla устанена.</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1313, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1313, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1313">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201313)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+										<div class="b-comment clearfix level-1">
+											<div class="img">
+												<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/avatar_005.ashx" alt="">
+											</div>
+											<div class="b-comment-body">
+												<p class="sign"><a href="http://robostroy.ru/community/profile/default.aspx?id=158143">egorsmelov</a> — 5 сентября 2012 г.</p>
+												<p class="text">Не могу скачать файл. Нажимаю на ссылку, снова выходит окно с просьбой ввести телефон и смс код. И так без остановки</p>
+												<div class="vote">
+													<div class="r">
+														<a href="#" onclick="return mark_post(424, 1387, false)" class="button minus">–</a> 0 <a href="#" onclick="return mark_post(424, 1387, true)" class="button plus">+</a>
+													</div>
+												</div>
+												
+													<div class="reply">
+														<a href="#" data-action="post.comment.prepare" data-pid="1387">Ответить</a>
+													</div>
+													
+												<div class="abuse">
+													<a href="javascript:ComplaintAdd(1,%201387)">Сигнал модератору</a>
+												</div>
+												<div class="corner"></div>
+											</div>
+										</div>
+									
+							</div>
+							<a name="comments"></a>
+							<div id="b_write_comment">
+								<div class="corner"></div>
+								<h3>Написать комментарий</h3>
+								
+										<p>
+											<textarea id="f_comment" class="w100"></textarea>
+										</p>
+										<p class="b-buttons"><a href="#" data-action="post.comment.add" data-id="424" data-pid="0" class="btn-save"><span>Отправить</span></a></p>
+									
+							</div>
+						
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="footmenu" class="clearfix">
+		<ul>
+			<li><a href="http://robostroy.ru/faq/">Как создать торгового робота</a></li>
+			<li><a href="http://robostroy.ru/lab/">Лаборатория</a></li>
+			<li><a href="http://robostroy.ru/community/">Сообщество</a></li>
+			<li><a href="http://robostroy.ru/about/">О проекте</a></li>
+		</ul>
+	</div>
+	<div id="footer">
+		<div id="quik_links" class="clearfix">
+			<dl>
+				<dt>Платформы</dt>
+				<dd><a href="http://robostroy.ru/faq/software/tradematic.aspx">Tradematic</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/quik.aspx">Quik</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/wealthlab.aspx">Wealth-Lab</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/omega.aspx">Omega</a></dd>
+				<dd><a href="http://robostroy.ru/faq/software/metastock.aspx">Metastock</a></dd>
+			</dl>
+			<dl>
+				<dt>Создание роботов</dt>
+				<dd><a href="http://robostroy.ru/faq/webinar/">Вебинары</a></dd>
+				<dd><a href="http://robostroy.ru/faq/video/quik.aspx">Видеокурсы</a></dd>
+				<dd><a href="http://robostroy.ru/faq/library/">Библиотека</a></dd>
+				<dd><a href="http://robostroy.ru/robots/">Биржа роботов</a></dd>
+			</dl>
+			<dl>
+				<dt>Сообщество</dt>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=strategies">Стратегии</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=robots">Роботы</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=theory">Теория</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=technologies">Технологии</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=news">Новости</a></dd>
+				<dd><a href="http://robostroy.ru/community/default.aspx?cid=analytics">Торговые рекомендации</a></dd>
+			</dl>
+			<dl>
+				<dt>Мой профиль</dt>
+				<dd><a href="http://robostroy.ru/community/profile/friends.aspx">Коллеги</a></dd>
+				<dd><a href="http://robostroy.ru/community/blog/">Блог</a></dd>
+				<dd><a href="http://robostroy.ru/community/profile/messages.aspx">Сообщения</a></dd>
+			</dl>
+			<div class="partners">
+				<h3>Партнеры проекта</h3>
+				<p>
+					<a href="http://broker.ru/brokerage"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/fgbcs_logo.gif" alt="" width="122" height="44"></a>
+				</p>
+			</div>
+		</div>
+		<div id="copyright">
+			<div class="logo">
+				<a href="http://robostroy.ru/"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robostroy_inv.png" alt="Робострой"></a>
+			</div>
+			<div class="robohand">
+				<img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/robohand.png" alt="">
+			</div>
+			<div class="disclaimer">
+				<p>2011 — 2014 © robostroy.ru</p>
+				<p><a href="http://robostroy.ru/agreement/">Пользовательское соглашение</a></p>
+				<br>
+				
+	<script id="top100Counter" src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/top100.gif"></script>
+
+			</div>
+			<div class="support">
+				<p><a href="#feedbackForm" id="feedbackFormLink">Написать администратору</a></p>
+			</div>
+			<div class="designer">
+				<p>Дизайн сайта — <!--noindex--><a href="http://www.openproject.ru/" target="_blank" rel="nofollow"><i class="xq"></i></a><!--/noindex--></p>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="common-hidden">
+	<form id="feedbackForm" action="/feedfack.ashx" method="post">
+		<input name="ValidationToken" id="ValidationToken" value="alsertjghljfsmzgj.lhgjnlvz;jntg" type="hidden">
+		<input name="mytoken" id="mytoken" value="" type="hidden">
+
+		<div class="fancybox-title-inside-top">
+			<h3>Написать администратору</h3>
+		</div>
+		<input name="action" value="send" type="hidden">
+		<div class="content">
+			<div class="label">
+				<label>Имя:</label>
+				<span id="feedbackFormUserNameError" class="invalid"></span>
+			</div>
+			<div class="username">
+				<input id="feedbackFormUserName" name="username">
+			</div>
+			<div class="label">
+				<label>E-mail:</label>
+				<span id="feedbackFormUserMailError" class="invalid"></span>
+			</div>
+			<div class="usermail">
+				<input id="feedbackFormUserMail" name="usermail">
+			</div>
+			<div class="label">
+				<label>Сообщение:</label>
+				<span id="feedbackFormMessageError" class="invalid"></span>
+			</div>
+			<div class="textbox">
+				<textarea id="feedbackFormMessage" name="message" cols="60" rows="10"></textarea>
+			</div>
+			<div class="submit">
+				<input value="Отправить" type="submit">
+			</div>
+		</div>
+	</form>
+</div>
+<div class="seo_counters">
+	
+	<script>document.write("<a href='http://www.liveinternet.ru/click' target=_blank><img src='//counter.yadro.ru/hit?t14.6;r" + escape(document.referrer) + ((typeof (screen) == "undefined") ? "" : ";s" + screen.width + "*" + screen.height + "*" + (screen.colorDepth ? screen.colorDepth : screen.pixelDepth)) + ";u" + escape(document.URL) + ";h" + escape(document.title.substring(0, 80)) + ";" + Math.random() + "' border=0 width=1 height=1 alt='' title=''><\/a>")</script><a href="http://www.liveinternet.ru/click" target="_blank"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/hit.gif" alt="" title="" border="0" width="1" height="1"></a>
+	<script>document.write("<a href='http://www.liveinternet.ru/click;BrokerCreditService' target=_blank><img src='//counter.yadro.ru/hit;BrokerCreditService?t14.6;r" + escape(document.referrer) + ((typeof (screen) == "undefined") ? "" : ";s" + screen.width + "*" + screen.height + "*" + (screen.colorDepth ? screen.colorDepth : screen.pixelDepth)) + ";u" + escape(document.URL) + ";h" + escape(document.title.substring(0, 80)) + ";" + Math.random() + "' border=0 width=1 height=1 alt='' title=''><\/a>")</script><a href="http://www.liveinternet.ru/click;BrokerCreditService" target="_blank"><img src="%D0%A0%D0%BE%D0%B1%D0%BE%D1%81%D1%82%D1%80%D0%BE%D0%B9%20%E2%80%94%20%D0%A2%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%20%D0%BD%D0%B0%20%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%B5%20%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D0%B5%D0%B9%20%D0%92%D1%83%D0%B4%D0%B8.%20%D0%A7%D0%B0%D1%81%D1%82%D1%8C%202.%20%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%D1%82%D0%BE%D1%80%D0%B3%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%BE%D0%B1%D0%BE%D1%82%D0%B0%20%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B0%D0%BB%D0%B0%20Quik%20%D0%BD%D0%B0%20%D1%8F%D0%B7%D1%8B%D0%BA%D0%B5%20QPile%20%E2%80%94%20%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_files/hit_002.gif" alt="" title="" border="0" width="1" height="1"></a>
+	<script>
+		(function () {
+			var g = document.createElement('script'),
+				s = document.getElementsByTagName('script')[0];
+			g.type = 'text/javascript';
+			g.async = true;
+			g.src = 'http' + ('https:' == document.location.protocol ? 's://' : '://') + 'stats.g.doubleclick.net/dc.js';
+			s.parentNode.insertBefore(g, s);
+		})();
+	</script>
+
+	<!-- Piwik -->
+	<script>
+		var _paq = _paq || [];
+		_paq.push(['trackPageView']);
+		_paq.push(['enableLinkTracking']);
+		(function () {
+			var u = '//stat.bcs.ru/p/';
+			_paq.push(['setTrackerUrl', u + 'piwik.php']);
+			_paq.push(['setSiteId', 4]);
+			var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+			g.type = 'text/javascript'; g.async = true; g.defer = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s);
+		})();
+	</script>
+	<noscript><p><img src='//stat.bcs.ru/p/piwik.php?idsite=4' style='border: 0;' alt='' /></p></noscript>
+<!-- End Piwik Code -->
+
+
+</div>
+
+<div id="fancybox-tmp"></div><div id="fancybox-loading"><div></div></div><div id="fancybox-overlay"></div><div id="fancybox-wrap"><div id="fancybox-outer"><div class="fancybox-bg" id="fancybox-bg-n"></div><div class="fancybox-bg" id="fancybox-bg-ne"></div><div class="fancybox-bg" id="fancybox-bg-e"></div><div class="fancybox-bg" id="fancybox-bg-se"></div><div class="fancybox-bg" id="fancybox-bg-s"></div><div class="fancybox-bg" id="fancybox-bg-sw"></div><div class="fancybox-bg" id="fancybox-bg-w"></div><div class="fancybox-bg" id="fancybox-bg-nw"></div><div id="fancybox-content"></div><a id="fancybox-close"></a><div id="fancybox-title"></div><a href="javascript:;" id="fancybox-left"><span class="fancy-ico" id="fancybox-left-ico"></span></a><a href="javascript:;" id="fancybox-right"><span class="fancy-ico" id="fancybox-right-ico"></span></a></div></div></body></html>

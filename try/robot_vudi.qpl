@@ -1,0 +1,620 @@
+PORTFOLIO_EX VudiLevelsRobot;
+DESCRIPTION Робот на основе уровней Вуди;
+CLIENTS_LIST ALL_CLIENTS;
+FIRMS_LIST ALL_FIRMS;
+
+PROGRAM
+
+
+'------------------------------------------------
+'
+'Робот на основе уровней Вуди
+'Автор: Милованов Максим, http://isynapse.ru
+'специально для http://robostoy.ru
+'
+'------------------------------------------------
+
+
+
+'--------------------- PROPERTIES --------------------'
+
+canTrade = 1                          'Разрешено ли совершать сделки, 0 = запрещено, 1 = разрешено
+
+
+clientAccount = "SPBFUT00019"         'Номер счета клиента
+clientCode = "SPBFUT00019"            'Код счета клиента
+secClass = "SPBFUT"                   'Класс инструмента
+secCode = "RIU2"                      'Код инструмента
+
+timeFrame = 15                        'ТаймФрейм
+
+shareCount = 1                        'Количество контрактов для сделки
+
+dealsCountPerDay = 2                  'Максимально количество сделок за день
+
+slippage = 200                        'Проскальзывание
+
+stopLoss = 800                        'Стоп-лосс - максимальная просадка от текущей позиции
+
+
+minStepPrice = 5                      'Минимальный шаг цены торгуемого инструмента (для фьючерса РТС = 5 пунктов)
+
+filePath = "C:\temp\robot_vudi_data.txt"        'Файл для хранения информации о количестве сделанных за день сделок
+
+candlesWatchCount = 500               'Количество просматриваемых свечей назад от текущего времени, для определения High, Low, Close предыдущего дня (необходимо просмотреть все свечи предыдущего дня или больше)
+
+isDebug = 1                           'Использовать ли режим отладки, 0 - нет, 1 - да
+'------------------- END PROPERTIES ------------------'
+
+
+
+'******************************DEBUG*******************
+'Переменные для отладки
+debugResistLevel = 139100
+debugSupportLevel = 139000
+debugStopLoss = 100
+'************************** END DEBUG*******************
+
+
+
+
+'--------------------- VARIABLES --------------------'
+dealsCount = 0            'Количество сделок
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''NEW_GLOBAL("TransID", 0)    'Номер транзакции, будет равен номеру сделки
+NEW_GLOBAL("orderNumber", 0)    'Номер транзакции, будет равен номеру сделки
+stopLevel = 0            'Уровень стоп-лоса
+
+foundPrevDay = 0    'Видим ли мы свечи предыдущего дня, 0 = false, 1 = true
+
+pivotLevel = 0      'Уровень пивот
+resistLevel = 0     'Уровень сопротивления
+supportLevel = 0    'Уровень поддержки
+
+prevDayHigh = 0     'High уровень предыдущего дня
+prevDayLow = 0      'Low уровень предыдущего дня
+prevDayClose = 0    'Close уровень предыдущего дня
+
+prevHourPart = "0"    'Время предыдущей свечи
+'------------------- END VARIABLES ------------------'
+
+
+
+
+'--------------------- FUNCTIONS ---------------------'
+'Функция перевода даты в текстовый формат
+'Параметры функции:
+'Year - год, Month - месяц, Day - день
+FUNC dateToString(Year, Month, Day)
+  IF (LEN(Month) < 2)
+    Month = "0" & Month
+  END IF
+  IF (LEN(Day) < 2)
+    Day = "0" & Day
+  END IF
+  
+  result = Year & Month & Day
+END FUNC
+
+
+'Функция перевода времени в текстовый формат
+'Параметры функции:
+'Hour - часы, Min - минуты, Sec - секунды
+FUNC timeToString(Hour, Min, Sec)
+    IF (LEN(Hour) < 2)
+        Hour = "0" & Hour
+    END IF
+    IF (LEN(Min) < 2)
+        Min = "0" & Min
+    END IF
+
+    result = Hour & Min & "00"
+END FUNC
+
+
+'Функция отправки заявки на покупку/продажу
+'Параметры функции:
+'operation - "B" или "S" - Покупка или Продажа.
+'-----
+FUNC createOrderByMarket(operation)
+    TransID = getUniqueTransID()
+    trans_params = ""
+    trans_params = set_value (trans_params, "TRANS_ID",    TransID)
+    trans_params = set_value (trans_params, "ACTION",      "NEW_ORDER")
+    trans_params = set_value (trans_params, "CLASSCODE",   secClass)
+    trans_params = set_value (trans_params, "SECCODE",     secCode)
+    trans_params = set_value (trans_params, "OPERATION",   operation)
+    trans_params = set_value (trans_params, "QUANTITY",    shareCount)
+    trans_params = set_value (trans_params, "TYPE",        "L")        'Для фьючерсов только лимитные заявки
+    trans_params = set_value (trans_params, "CLIENT_CODE", clientCode)
+    trans_params = set_value (trans_params, "ACCOUNT",     clientAccount)
+  
+    orderPrice = 0
+
+    IF operation = "B"
+        offerPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "OFFER"), "PARAM_VALUE")    'Лучшая цена предложения
+        orderPrice = offerPrice + slippage
+        orderPrice = floorRTSPrice(orderPrice)
+    END IF
+    IF operation = "S"
+        bidPrice = 0 + GET_VALUE(GET_PARAM_EX(secClass, secCode, "BID"), "PARAM_VALUE")        'Лучшая цена спроса
+        orderPrice = bidPrice - slippage
+        orderPrice = floorRTSPrice(orderPrice)
+    END IF
+  
+    trans_params = set_value (trans_params, "PRICE",   orderPrice)
+    
+    trans_result = SEND_TRANSACTION(300, trans_params)
+
+    FOR while FROM 0 TO 1000      'Цикл проверки заявки
+        'while = 0                'Обнуление счётчика для бесконечности цикла. Включается при необходимости
+        IF GET_VALUE(trans_result, "RESULT_EX") == "3"              'Если транзакция выполнена, то запоминаем номер ордера и выходим из функции
+            orderNumber = GET_VALUE(trans_result, "ORDER_NUMBER")   'В случае удачи получим номер ордера
+            RESULT = 1
+            RETURN      'Выход из функции отправки заявки
+        END IF
+    END FOR
+
+    descriptionError = GET_VALUE(trans_result, "DESCRIPTION")
+    Message("ERROR: " & descriptionError & " = " & orderPrice, 1)
+
+    RESULT = 0
+END FUNC
+
+
+
+
+'Функция отправки стоп-заявки
+'Параметры функции:
+'operation - "B" или "S" - Покупка или Продажа.
+'price - цена
+'-----
+FUNC createStopOrder(operation, stopPrice)
+    TransID = getUniqueTransID()
+    trans_params = ""
+    trans_params = set_value (trans_params, "TRANS_ID",    TransID)
+    trans_params = set_value (trans_params, "ACTION",      "NEW_STOP_ORDER")
+    trans_params = set_value (trans_params, "CLASSCODE",   secClass)
+    trans_params = set_value (trans_params, "SECCODE",     secCode)
+    trans_params = set_value (trans_params, "OPERATION",   operation)
+    trans_params = set_value (trans_params, "QUANTITY",    shareCount)
+    trans_params = set_value (trans_params, "TYPE",        "L")        'Для фьючерсов только лимитные заявки
+    trans_params = set_value (trans_params, "CLIENT_CODE", clientCode)
+    trans_params = set_value (trans_params, "ACCOUNT",     clientAccount)
+    trans_params = set_value (trans_params, "STOPPRICE",   stopPrice)
+
+    orderPrice = 0
+    IF operation = "B"
+        orderPrice = stopPrice + slippage
+    orderPrice = floorRTSPrice(orderPrice)
+    END IF
+    IF operation = "S"
+        orderPrice = stopPrice - slippage
+        orderPrice = floorRTSPrice(orderPrice)
+    END IF
+
+    trans_params = set_value (trans_params, "PRICE",       orderPrice)
+
+    trans_result = SEND_TRANSACTION(300, trans_params)
+    FOR while FROM 0 TO 1000      'Цикл проверки заявки
+        'while = 0                'Обнуление счётчика для бесконечности цикла. Включается при необходимости
+        IF GET_VALUE(trans_result, "RESULT_EX") == "3"              'Если транзакция выполнена, то запоминаем номер ордера и выходим из функции
+            orderNumber = GET_VALUE(trans_result, "ORDER_NUMBER")   'В случае удачи получим номер ордера
+            RESULT = 1
+            RETURN      'Выход из функции отправки заявки
+        END IF
+    END FOR
+
+    RESULT = 0
+END FUNC
+
+
+
+'Снять все стоп-заявки
+FUNC killAllStopOrders()
+    N = 0 + GET_NUMBER_OF("STOP_ORDERS")
+
+    IF N > 0
+        FOR I FROM 0 TO N
+            IF (GET_VALUE(GET_ITEM("STOP_ORDERS",I), "SECCODE") = secCode) AND (GET_VALUE(GET_ITEM("STOP_ORDERS",I), "STATUS") = "ACTIVE")
+                KEY = GET_VALUE(GET_ITEM("STOP_ORDERS",I), "NUMBER")
+                R = killOrderByKey(KEY)
+            END IF
+        END FOR
+    END IF
+END FUNC
+
+
+
+
+'Снятие заявки по её ключу
+'KEY - ключ
+FUNC killOrderByKey(KEY)
+    TransID = getUniqueTransID()
+    NEW_GLOBAL("TRANS_PARAMS", "")
+    NEW_GLOBAL("TRANS_RESULT", "")
+    TRANS_PARAMS = ""
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "ACTION", "KILL_ORDER")
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "CLASSCODE", CLASSCODE)
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "CLIENT_CODE", ACCOUNT)
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "SECCODE", SECCODE)
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "ACCOUNT", ACCOUNT) 
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "ORDER_KEY", KEY & "")
+    TRANS_PARAMS = SET_VALUE (TRANS_PARAMS, "TRANS_ID", TRID)
+    TRANS_RESULT = SEND_TRANSACTION (300, TRANS_PARAMS)
+    RESULT = GET_VALUE(TRANS_RESULT, "DESCRIPTION")
+END FUNC
+
+
+'Получения целой части от деления числа а на число b
+FUNC DIV(a,b)
+    RESULT = FLOOR(a / b)
+END FUNC
+
+
+
+'Получения остатка от деления числа а на число b
+func MOD(a, b)
+     IF (0 + b = 0)
+          result = 0
+     ELSE
+          cel = floor((a/b))
+          result = a - (b * cel)
+     END IF
+end func
+
+
+
+
+'Функция записи в файл информации о количестве сделаннх сделок за день
+'Параметры функции:
+'filePath - Путь до файла
+'day - День месяца
+'dealsCount - Количество сделок за день
+FUNC writeStrategyInfo(filePath, day, dealsCount)
+    CLEAR_FILE (filePath)
+    writeln (filePath, day)
+    writeln (filePath, dealsCount)
+END FUNC
+
+
+
+
+'Определение текущего количества открытых позиций по фьючерсам
+FUNC getFuturesPosition(securityCode)
+    POZ = 0
+    N = 0 + GET_NUMBER_OF("FUTURES_CLIENT_HOLDINGS")
+    IF N > 0
+        FOR I FROM 0 TO N
+            IF GET_VALUE(GET_ITEM("FUTURES_CLIENT_HOLDINGS",I),"SECCODE") = securityCode
+                POZ = 0 + GET_VALUE(GET_ITEM("FUTURES_CLIENT_HOLDINGS",I), "TOTAL_NET")
+            END IF
+        END FOR
+    END IF
+    RESULT = POZ
+    RETURN
+END FUNC
+
+
+
+'Функция возвращает уникальный номер транзакции
+FUNC getUniqueTransID()
+    SERVERTIME = GET_INFO_PARAM("SERVERTIME")
+    TIME = SUBSTR(SERVERTIME,0,2) & SUBSTR(SERVERTIME,3,2) & SUBSTR(SERVERTIME,6,7)
+    
+    RESULT = TIME
+END FUNC
+
+
+
+'Функция возвращает Цену с учетом минимального шага цена для ФОРТС
+FUNC floorRTSPrice(price)
+    price = DIV(price + 0, minStepPrice)
+    price = price * minStepPrice
+
+    RESULT = price
+END FUNC
+'------------------- END FUNCTIONS -----------------'
+
+
+DELETE_ALL_ITEMS()
+
+
+'-----Локальное время-------
+'datePart = GET_DATETIME()                  'Получаем дату
+'yearPart = GET_VALUE(datePart, "YEAR")     'Год
+'monthPart = GET_VALUE(datePart, "MONTH")   'Месяц
+'dayPart = GET_VALUE(datePart, "DAY")       'День
+'hourPart = GET_VALUE(datePart, "HOUR")     'Час
+'minutePart = GET_VALUE(datePart, "MIN")    'Минута
+'minutePart = timeFrame * FLOOR(minutePart / timeFrame)
+
+
+
+
+'------Время сервера---------
+SERVERDATE = GET_INFO_PARAM("TRADEDATE")
+SERVERTIME = GET_INFO_PARAM("SERVERTIME")
+DATE = SUBSTR(SERVERDATE,6,4) & SUBSTR(SERVERDATE,3,2) & SUBSTR(SERVERDATE,0,2)
+TIME = SUBSTR(SERVERTIME,0,2) & SUBSTR(SERVERTIME,3,2) & SUBSTR(SERVERTIME,6,7)
+yearPart = 0 + SUBSTR(DATE,0,4) 
+monthPart = 0 + SUBSTR(DATE,4,2) 
+dayPart = 0 + SUBSTR(DATE,6,2) 
+hourPart = 0 + SUBSTR(TIME,0,2) 
+minutePart = 0 + SUBSTR(TIME,2,2) 
+minutePart = timeFrame * FLOOR(minutePart/timeFrame)             'округление минут до выбранного интервала
+secondPart = 0 + SUBSTR(TIME,4,2) 
+DATE = dateToString(yearPart, monthPart, dayPart)
+TIME = timeToString(hourPart, minutePart)
+
+
+'Текущее время
+currentDay = dayPart
+currentHour = hourPart
+currentMinute = minutePart
+
+
+
+'Получаем информацию о количестве сделок, сделанных за текущий день
+error = ""
+dealDay = READ_LINE(filePath, 1, error) + 0
+dealsCount = READ_LINE(filePath, 2, error) + 0
+
+
+'Если текущий день - новый, то перез0аписываем файл
+IF ( dealDay < currentDay )
+    writeStrategyInfo(filePath, currentDay, 0)
+END IF
+
+
+
+lastDay = currentDay
+
+
+'Просматриваем предыдущие свечи для поиска High, Low, Close цен
+FOR i from 1 to candlesWatchCount
+
+    dateString = dateToString(yearPart, monthPart, dayPart)
+    timeString = timeToString(hourPart, minutePart, secondPart)
+  
+    candle = GET_CANDLE(secClass, secCode, "", timeFrame, "PRICE", dateString, timeString)
+    open = GET_VALUE(candle, "Open") + 0
+
+    IF (open > 0)
+        high = GET_VALUE(Candle, "High")
+        low = GET_VALUE(Candle, "Low")
+        close = GET_VALUE(Candle, "Close")
+        volume = GET_VALUE(candle, "Volume")
+
+
+        'Если вышли за пределы нужного нам дня
+        IF (dayPart+0 < lastDay+0) AND (foundPrevDay == 1)
+            'Выходим из цикла
+            BREAK
+        END IF
+
+
+        'Нас интересуют только свечи предыдущего дня
+        IF (i <> 1) AND (dayPart+0 < lastDay+0) AND (foundPrevDay == 0)
+	    foundPrevDay = 1 'требуемый день найден
+            prevDayHigh = high
+            prevDayLow = low
+            prevDayClose = close
+        END IF
+
+
+
+        'Вычисляем High, Low предыдущего дня
+        IF foundPrevDay == 1
+            IF ( high > prevDayHigh )
+                prevDayHigh = high
+            END IF
+            IF ( low < prevDayLow )
+                prevDayLow = low
+            END IF
+        END IF
+
+    END IF
+
+    
+    lastDay = dayPart                 'Запоминаем текущий день для определения предыдущего дня
+
+    
+
+    'Вычисляем время следующей назад свечи
+
+    minutePart = minutePart - timeFrame
+      
+    IF minutePart < 0
+            minutePart = 60 - timeFrame
+            hourPart = hourPart - 1
+
+            IF hourPart < 0
+                hourPart = 23
+                dayPart = dayPart - 1
+        
+                IF dayPart < 1
+                    dayPart = 31
+                    monthPart = monthPart - 1
+      
+                    IF monthPart < 1
+                        monthPart = 12
+                        yearPart = yearPart - 1
+                    END IF
+                END IF
+            END IF
+    END IF
+
+END FOR
+
+
+
+
+'Рассчитываем уровни Вуди
+pivotLevel = (prevDayHigh + prevDayLow + 2 * prevDayClose) / 4
+resistLevel = (2 * pivotLevel) - prevDayLow
+supportLevel = (2 * pivotLevel) - prevDayHigh
+
+
+
+
+
+'Если режим отладки включен
+IF ( isDebug == 1 )
+    resistLevel = debugResistLevel
+    supportLevel = debugSupportLevel
+    stopLoss = debugStopLoss
+END IF
+
+
+
+
+
+'Если совершать сделки разрешено
+IF ( canTrade == 1 )
+
+    openPos = getFuturesPosition(secCode)    'Определяем количество открытых позиций и в какую сторону открыта позиция по фьючерсу
+
+
+    'Если позиция открыта, то пытаемся выставить стоп-лосс для исполненных заявок в рамках стратегии
+    IF ( openPos <> 0 )
+        balance = GET_VALUE(GET_ITEM("ORDERS", orderNumber), "BALANCE") + 0    'определяем полностью ли исполнилась заявка
+
+        'Если заявка исполнилась полноcтью
+        IF (balance == 0)
+
+            isSetStop = 0       'Выставлен ли стоп-лосс, 0 = false, 1 = true
+
+            'Проверяем если стоп-лосс по этому инструменту еще не выставлен, то выставляем
+            n = get_number_of("STOP_ORDERS")
+            IF n > 0
+                FOR i FROM 0 TO n
+                    IF (GET_VALUE(GET_ITEM("STOP_ORDERS", i),"SECCODE") = secCode) AND (GET_VALUE(GET_ITEM("STOP_ORDERS", i), "STATUS") = "ACTIVE")
+                        isSetStop = 1
+                    END IF
+                END FOR
+            END IF
+
+
+	    'Если стоп-лосс не выставлен
+            IF (isSetStop == 0)
+                'Определяем по какой цене исполнилась заявка
+                price = 0
+
+                'Перебираем все исполенные сделки
+                n = GET_NUMBER_OF("TRADES")
+                FOR i from 1 to n
+                    trade = GET_ITEM("TRADES", i)
+                    num = GET_VALUE(trade, "ORDER_NUMBER") + 0
+            
+                    orderNumber = orderNumber + 0
+
+                    IF ( orderNumber == num )
+                        'Определяем по какой цене исполнилась заявка
+                        price = GET_VALUE (trade, "PRICE") + 0                   ' Цена
+                        BREAK
+                    END IF
+                END FOR
+
+
+                'Если цена исполненной заявки определена то выставляем стоп-лосc
+                IF (price <> 0)
+                    'Определяем уровень стоп-заявки
+
+		    'Если позиция открыта в лонг
+                    IF (openPos > 0)
+                        stopLossLevel = price - stopLoss
+                        transactionResult = createStopOrder("S", stopLossLevel)    'Пытаемся выставить стоп-лосс
+                    ELSE    'Если позиция открыта в шорт
+                        stopLossLevel = price + stopLoss
+                        transactionResult = createStopOrder("B", stopLossLevel)    'Пытаемся выставить стоп-лосс
+                    END IF
+            
+                    'Если выставление стоп-заявки не удалось
+                    IF ( transactionResult <> 1)
+                        'Снимаем (на всякий случай) все стоп-заявки
+                        killAllStopOrders()
+                    END IF
+                END IF
+
+            END IF
+
+        END IF
+
+    ELSE                 'Если нет открытых позиций
+
+	'Если уровни рассчитаны
+        IF (resistLevel <> 0) AND (supportLevel <> 0)
+            IF (dealsCount < dealsCountPerDay)
+                hour = 0 + currentHour
+                minute = 0 + currentMinute
+
+                IF ( hour >= 11 ) AND ( hour <= 18 )        'Сделка только в определенное время
+                    price = GET_VALUE(GET_PARAM_EX(secClass, secCode, "LAST"), "PARAM_VALUE") + 0          'Цена последней сделки по инструменту
+
+                    'Если свеча закрылась выше уровеня сопротивления
+                    IF ( price > resistLevel ) AND ( MOD(minutePart, 15) == 0 )
+
+                        transactionResult = createOrderByMarket("B")      'Открытие сделки в лонг
+
+                        'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+                        IF (transactionResult == 1)
+                            dealsCount = dealsCount + 1
+                            isOpenPos = 1
+                        END IF
+                    ELSE
+                        IF ( price < supportLevel ) AND ( MOD(minutePart, 15) == 0 )
+                            transactionResult = createOrderByMarket("S")      'Открытие сделки в шорт
+
+                            'Если транзакция прошла успешно, т.е. заявка отправлена на рынок и исполнилась
+                            IF (transactionResult == 1)
+                                dealsCount = dealsCount + 1
+                                isOpenPos = 1
+                            END IF
+                        END IF
+                    END IF
+                END IF
+            END IF
+        END IF
+    END IF
+
+
+END IF       'End canTrade
+
+
+writeStrategyInfo(filePath, currentDay, dealsCount)
+
+
+
+
+output = CREATE_MAP()
+output = SET_VALUE(output, "resistParam", resistLevel)
+output = SET_VALUE(output, "supportParam", supportLevel)
+output = SET_VALUE(output, "stopParam", stopLoss)
+      
+ADD_ITEM(1, output)
+
+
+END_PROGRAM
+
+
+
+
+PARAMETER resistParam;
+PARAMETER_TITLE Сопротивление;
+PARAMETER_DESCRIPTION Сопротивление;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER supportParam;
+PARAMETER_TITLE Поддержка;
+PARAMETER_DESCRIPTION Поддержка;
+PARAMETER_TYPE STRING(30);
+END
+
+PARAMETER stopParam;
+PARAMETER_TITLE Стоп-лосс;
+PARAMETER_DESCRIPTION Стоп-лосс;
+PARAMETER_TYPE STRING(30);
+END
+
+END_PORTFOLIO_EX
